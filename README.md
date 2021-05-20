@@ -69,6 +69,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 | :------------- | :----------         |
 |-i              |Nom de l'image jpg                                   |
 |-m              |Taille de la matrice pour le tramage ordonné<br>valeurs possibles: 2, 3, 4, 8         |
+|-f              |Taille de la matrice pour le tramage diffusion d'erreur<br>valeurs possibles: de 1 à 10         |
 |-g              |Modification du gamma<br>valeurs : entre 0.1 et 2.0, 1.0 gamma d'origine           |
 |-b              |Modification de la luminosité<br>valeurs : entre -128 et 128, 0 luminosité d'origine       |
 |-t              |Modification du contraste<br>valeurs : entre 0.1 et 2.0, 1.0 contraste d'origine           |
