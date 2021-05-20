@@ -634,16 +634,16 @@ void save_map_40_col(char *filename, MAP_40 *map_40, PALETTE *palette)
 	sprintf(fname_snap_out, "%s.bld", filename);
 	FILE *tosnap_out = fopen(fname_snap_out, "w");
 
-	fprintf(tosnap_out, "10 DIM T%(10000)\n");
+	fprintf(tosnap_out, "10 DIM T%%(10000)\n");
 	fprintf(tosnap_out, "20 DEFFNC(R)=MAX(-R-1,R)\n");
-	fprintf(tosnap_out, "30 LOADP %s,T%(10000)\n", map_filename);
-	fprintf(tosnap_out, "40 T=T%(10000)\n");
-	fprintf(tosnap_out, "50 T=T+1 ;: IF T%(T)<>-23206 THEN END\n");
-	fprintf(tosnap_out, "60 FOR I=15 TO 0 STEP -1:T=T+1:PALETTE I,FNC(T%(T)):NEXT\n");
-	fprintf(tosnap_out, "70 T=T+1 : CONSOLE,,,,T%(T)\n");
-	fprintf(tosnap_out, "80 T=T+1 : SCREEN,,T%(T)\n");
-	fprintf(tosnap_out, "90 T=T+1 : POKE &H605F,T%(T)\n");
-	fprintf(tosnap_out, "100 PUT(0,0),T%(10000)\n");
+	fprintf(tosnap_out, "30 LOADP \"%s\",T%%(10000)\n", map_filename);
+	fprintf(tosnap_out, "40 T=T%%(10000)\n");
+	fprintf(tosnap_out, "50 T=T+1 : IF T%%(T)<>-23206 THEN END\n");
+	fprintf(tosnap_out, "60 FOR I=15 TO 0 STEP -1:T=T+1:PALETTE I,FNC(T%%(T)):NEXT\n");
+	fprintf(tosnap_out, "70 T=T+1 : CONSOLE,,,,T%%(T)\n");
+	fprintf(tosnap_out, "80 T=T+1 : SCREEN,,T%%(T)\n");
+	fprintf(tosnap_out, "90 T=T+1 : POKE &H605F,T%%(T)\n");
+	fprintf(tosnap_out, "100 PUT(0,0),T%%(10000)\n");
 	fflush(tosnap_out);
 	fclose(tosnap_out);
 
