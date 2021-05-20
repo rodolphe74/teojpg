@@ -50,7 +50,10 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 		-z, --machine=<str>       Génération pour thomson [TO7, TO770, MO5, MO6, TO8, TO9]
 
 
+Une fois le résultat affiché, il est possible de basculer entre le mode PC/Color Clash à l'aide de la barre d'espacement.
+Les touches -/+ permettent de commuter la taille des pixels (doubles ou simples).
 
+Pour l'instant, seul le mode BM40, 16 couleurs 320x200 est géré.
 
 
 
