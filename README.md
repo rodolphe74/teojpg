@@ -63,10 +63,10 @@ Il est possible de reprendre le fichier TO-SNAP dans Grafx pour modifier la pale
 
 # Les arguments
 
-| Argument       | Description  |
-| :------------- | :----------: |
-|  Cell Contents | More Stuff<br>dsqdsq   |
-| You Can Also   | Put Pipes In |
+| Argument       | Description          |
+| :------------- | :----------:         |
+|-i              | Nom de l'image jpg   |
+|-m              | Taille de la matrice pour le tramage ordonné         |
 
 
 
