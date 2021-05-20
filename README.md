@@ -17,4 +17,4 @@ Par exemple, pour une configuration TO7 :
 
 S'affiche :
 
-![teojpg](/samples/kenny_result.png)
+![teojpg](/samples/kenny_res.png)
