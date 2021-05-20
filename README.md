@@ -15,7 +15,7 @@ Par exemple, pour une configuration TO7 :
 
 ![L'original](/samples/KennyMcCormick_small.jpg)
 
-S'affiche :
+S'affiche sur le PC :
 
 ![teojpg](/samples/kenny_res.png)
 
