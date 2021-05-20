@@ -68,7 +68,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 | Argument       | Description         |
 | :------------- | :----------         |
 |-i              |Nom de l'image jpg                                   |
-|-m              |Taille de la matrice pour le tramage ordonné<br>valeurs possibles: 2,3,4,8         |
+|-m              |Taille de la matrice pour le tramage ordonné<br>valeurs possibles: 2, 3, 4, 8         |
 |-g              |Modification du gamma<br>valeurs : entre 0.1 et 2.0, 1.0 gamma d'origine           |
 |-b              |Modification de la luminosité<br>valeurs : entre -128 et 128, 0 luminosité d'origine       |
 |-t              |Modification du contraste<br>valeurs : entre 0.1 et 2.0, 1.0 contraste d'origine           |
@@ -76,7 +76,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 |-w              |Utilisation de la quantification [Xiaolin Wu](https://www.ece.mcmaster.ca/~xwu/cq.c)         |
 |-o              |Utilisation de la quantification [Octree](https://fr.wikipedia.org/wiki/Octree)         |
 |-c              |Utilisation de la quantification [Median Cut](https://en.wikipedia.org/wiki/Median_cut)         |
-
+|-z              |Choix de la machine Thomson<br>valeurs possibles: TO7, TO770, TO8, TO9, MO5, MO6<br>La valeur choisie affecte le fichier basic résultant et l'utilisation d' une palette spécifique|
 
 
 
