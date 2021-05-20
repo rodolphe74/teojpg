@@ -29,8 +29,8 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 
 
 	$ ./teojpg.exe -h
-	Usage: thomsonjpg24 [options] [[--] args]
-	   or: thomsonjpg24 [options]
+	Usage: teojpg [options] [[--] args]
+	   or: teojpg [options]
 
 	A brief description of what the program does and how it works.
 
