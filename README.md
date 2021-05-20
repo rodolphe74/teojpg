@@ -49,7 +49,7 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètre.
 		-c, --median              Quantification median-cut
 		-z, --machine=<str>       Génération pour thomson [TO7, TO770, MO5, MO6, TO8, TO9]
 
-	Additional description of the program after the description of the arguments.
+
 
 
 
