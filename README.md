@@ -65,7 +65,7 @@ Il est possible de reprendre le fichier TO-SNAP dans Grafx pour modifier la pale
 
 | Argument       | Description  |
 | :------------- | :----------: |
-|  Cell Contents | More Stuff   |
+|  Cell Contents | More Stuff<br>dsqdsq   |
 | You Can Also   | Put Pipes In |
 
 
