@@ -9,7 +9,7 @@ Deux formats sont générés :
 * Un programme basic lié à la configuration demandée (TO7, TO7-70, TO8, TO9, MO5, MO6) à lancer sur l'ordinateur.
 * Un fichier [TO-SNAP](http://collection.thomson.free.fr/code/articles/prehisto_bulletin/page.php?XI=0&XJ=13) exploitable sur l'ordinateur à partir d'un loader basic (généré lui aussi) ou bien sur [Grafx](http://grafx2.chez.com/).
 
-Le résultat est affiché dans une fenêtre graphique.
+Le résultat est affiché dans une fenêtre graphique à l'aide de la librairie [SDL](https://www.libsdl.org/).
 
 Par exemple, pour une configuration TO7 :
 
