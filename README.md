@@ -24,7 +24,7 @@ Et donne sur un TO7 :
 ![dcmoto](/samples/ken_emul.png)
 
 # Le programme
-Une version windows est disponible dans le répertoire release.
+Une version Windows est disponible dans le répertoire release.
 Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 
 
@@ -53,7 +53,8 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 Une fois le résultat affiché, il est possible de basculer entre le mode PC/Color Clash à l'aide de la barre d'espacement.
 Les touches -/+ permettent de commuter la taille des pixels (doubles ou simples).
 
-Pour l'instant, seul le mode Bitmap 40, 16/8 couleurs 320x200 commun à tout les Thomson est géré.
+Pour l'instant, seul le mode Bitmap 40, 16/8 couleurs 320x200 commun à tous les Thomson est géré.
+Lorsqu'une configuration de type MO6, TO8, TO9 est choisie, le programme utilise un algorithme de quantization de palette pour réduire le nombre de couleur à 16 parmi les 4096 disponibles sur ces machines. Le résultat affiché sur le PC est en général assez fidèle aux tons de l'image de départ. L'image affichée sur le Thomson peut différer de l'image source. Il est en effet difficile de faire une correspondance exacte entre une palette PC sur un ordinateur Thomson. 
 
 
 
