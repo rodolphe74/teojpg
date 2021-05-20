@@ -83,5 +83,6 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 
 - Essayer d'ajouter la diffusion d'erreur OSTROMOUKHOV
 - Gérer les autres modes graphiques Thomson TO8/TO9(+)/MO6, 320x200 4 couleurs et 160x200 16 couleurs sans contraintes.
+- Makefile Linux/BSD
 
 
