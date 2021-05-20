@@ -88,10 +88,10 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 
 # Les liens
 - [UToPic](https://github.com/Samuel-DEVULDER/UToPiC)
-- [Emulateur DCMOTO](http://dcmoto.free.fr/emulateur/index.html)
-- [libcaca](http://caca.zoy.org/wiki/libcaca/study/introduction)
+- [Emulateur DCMOTO et DCFDUTIL](http://dcmoto.free.fr/emulateur/index.html)
 - [Les scripts Thomson de Grafx](https://gitlab.com/GrafX2/grafX2/-/tree/master/share/grafx2/scripts/samples/picture/thomson)
 - [Le format SNAP-TO](http://collection.thomson.free.fr/code/articles/prehisto_bulletin/page.php?XI=0&XJ=13)
+- [libcaca](http://caca.zoy.org/wiki/libcaca/study/introduction)
 - [Containers API](https://github.com/bkthomps/Containers)
 
 
