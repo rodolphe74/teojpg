@@ -92,6 +92,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 - [Les scripts Thomson de Grafx](https://gitlab.com/GrafX2/grafX2/-/tree/master/share/grafx2/scripts/samples/picture/thomson)
 - [Le format SNAP-TO](http://collection.thomson.free.fr/code/articles/prehisto_bulletin/page.php?XI=0&XJ=13)
 - [libcaca](http://caca.zoy.org/wiki/libcaca/study/introduction)
+- [Dithering ordonné Yliluoma](https://bisqwit.iki.fi/story/howto/dither/jy/)
 - [Containers API](https://github.com/bkthomps/Containers)
 - [libjpeg](https://sourceforge.net/projects/libjpeg/files/libjpeg/6b/)
 - [argparse](https://github.com/cofyc/argparse)
