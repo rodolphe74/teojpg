@@ -65,8 +65,8 @@ Il est possible de reprendre le fichier TO-SNAP dans Grafx pour modifier la pale
 
 | Argument       | Description          |
 | :------------- | :----------:         |
-|-i              | Nom de l'image jpg   |
-|-m              | Taille de la matrice pour le tramage ordonné         |
+|-i              |Nom de l'image jpg                                   |
+|-m              |Taille de la matrice pour le tramage ordonné         |
 
 
 
