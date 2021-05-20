@@ -76,7 +76,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 |-w              |Utilisation de la quantification [Xiaolin Wu](https://www.ece.mcmaster.ca/~xwu/cq.c)         |
 |-o              |Utilisation de la quantification [Octree](https://fr.wikipedia.org/wiki/Octree)         |
 |-c              |Utilisation de la quantification [Median Cut](https://en.wikipedia.org/wiki/Median_cut)         |
-|-z              |Choix de la machine Thomson<br>valeurs possibles: TO7, TO770, TO8, TO9, MO5, MO6<br>La valeur choisie affecte le fichier basic résultant et l'utilisation d' une palette spécifique|
+|-z              |Choix de la machine Thomson<br>valeurs possibles: TO7, TO770, TO8, TO9, MO5, MO6<br>La valeur choisie affecte le fichier basic résultant ainsi que l'utilisation d'une palette spécifique|
 
 
 
