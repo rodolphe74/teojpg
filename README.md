@@ -96,5 +96,5 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 - [libjpeg](https://sourceforge.net/projects/libjpeg/files/libjpeg/6b/)
 - [argparse](https://github.com/cofyc/argparse)
 - [SDL2-devel-2.0.14-mingw.tar.gz](https://www.libsdl.org/download-2.0.php)
-
+- [mingw gcc 64 bits pour Windows](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/)
 
