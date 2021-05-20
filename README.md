@@ -95,5 +95,6 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 - [Containers API](https://github.com/bkthomps/Containers)
 - [libjpeg](https://sourceforge.net/projects/libjpeg/files/libjpeg/6b/)
 - [argparse](https://github.com/cofyc/argparse)
+- [SDL2-devel-2.0.14-mingw.tar.gz](https://www.libsdl.org/download-2.0.php)
 
 
