@@ -85,4 +85,8 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 - Gérer les autres modes graphiques Thomson TO8/TO9(+)/MO6, 320x200 4 couleurs et 160x200 16 couleurs sans contraintes.
 - Makefile Linux/BSD
 
+# Les liens
+- [libcaca](http://caca.zoy.org/wiki/libcaca/study/introduction)
+- [UToPic](https://github.com/Samuel-DEVULDER/UToPiC)
+
 
