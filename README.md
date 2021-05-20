@@ -26,15 +26,15 @@ Et donne sur un TO7 :
 # Le programme
 Une version windows est disponible dans le répertoire release.
 Il s'agit d'un programme en ligne de commande prenant une liste de paramètre.
-`$ ./teojpg.exe -h
-Usage: thomsonjpg24 [options] [[--] args]
-   or: thomsonjpg24 [options]
+`$ ./teojpg.exe -h`
+`Usage: thomsonjpg24 [options] [[--] args]`
+   `or: thomsonjpg24 [options]`
 
-A brief description of what the program does and how it works.
+`A brief description of what the program does and how it works.`
 
-    -h, --help                show this help message and exit
+    `-h, --help                show this help message and exit`
 
-Basic options
+`Basic options`
     -i, --input=<str>         Nom de l'image
     -m, --matrix=<int>        Tramage ordonné Matrice [2,3,4,8]
     -f, --floyd=<int>         Tramage Floyd Steinberg [1->10]
