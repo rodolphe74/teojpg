@@ -11,6 +11,10 @@ Deux formats sont générés :
 
 Le résultat est affiché dans une fenêtre graphique.
 
-Par exemple : 
+Par exemple, pour une configuration TO7 : 
 
 ![L'original](/samples/KennyMcCormick_small.jpg)
+
+S'affiche :
+
+![teojpg](/samples/kenny_result.png)
