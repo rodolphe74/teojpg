@@ -53,7 +53,7 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 Une fois le résultat affiché, il est possible de basculer entre le mode PC/Color Clash à l'aide de la barre d'espacement.
 Les touches -/+ permettent de commuter la taille des pixels (doubles ou simples).
 
-Pour l'instant, seul le mode Bitmap 40, 16/8 couleurs 320x200 commun à tout les Thomsons est géré.
+Pour l'instant, seul le mode Bitmap 40, 16/8 couleurs 320x200 commun à tout les Thomson est géré.
 
 
 
