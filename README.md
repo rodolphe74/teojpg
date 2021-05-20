@@ -61,7 +61,7 @@ Il est possible de jouer sur le gamma, le contraste, la luminosité et la satura
 
 Il est possible de reprendre le fichier TO-SNAP dans Grafx pour modifier la palette.
 
-Je suis à l'écoute de toute proposition proposition permettant de mieux faire correspondre les couleurs PC <> Thomson.
+Je suis à l'écoute de toute proposition permettant de mieux faire correspondre les couleurs PC <> Thomson.
 
 # Les arguments
 
