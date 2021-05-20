@@ -23,3 +23,29 @@ Et donne sur un TO7 :
 
 ![dcmoto](/samples/ken_emul.png)
 
+# Le programme
+Une version windows est disponible dans le répertoire release.
+Il s'agit d'un programme en ligne de commande prenant une liste de paramètre.
+`$ ./teojpg.exe -h
+Usage: thomsonjpg24 [options] [[--] args]
+   or: thomsonjpg24 [options]
+
+A brief description of what the program does and how it works.
+
+    -h, --help                show this help message and exit
+
+Basic options
+    -i, --input=<str>         Nom de l'image
+    -m, --matrix=<int>        Tramage ordonné Matrice [2,3,4,8]
+    -f, --floyd=<int>         Tramage Floyd Steinberg [1->10]
+    -g, --gamma=<flt>         Correction gamma [0.1->2.0]
+    -b, --brightness=<flt>    Luminosité [-128->+128]
+    -t, --contrast=<flt>      Contraste [0.1->2.0]
+    -s, --saturation=<flt>    Saturation [0.1->2.0]
+    -w, --wu                  Quantification Wu
+    -o, --octree              Quantification Octree
+    -c, --median              Quantification median-cut
+    -z, --machine=<str>       Génération pour thomson [TO7, TO770, MO5, MO6, TO8, TO9]
+
+Additional description of the program after the description of the arguments.`
+
