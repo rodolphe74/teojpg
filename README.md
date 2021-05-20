@@ -12,9 +12,11 @@ Deux formats sont générés :
 Le résultat est affiché dans une fenêtre graphique.
 
 Par exemple, pour une configuration TO7 : 
-
 ![L'original](/samples/KennyMcCormick_small.jpg)
 
 S'affiche :
-
 ![teojpg](/samples/kenny_res.png)
+
+Et donne sur un TO7 :
+![dcmoto](/samples/ken_emul.png)
+
