@@ -67,6 +67,10 @@ Il est possible de reprendre le fichier TO-SNAP dans Grafx pour modifier la pale
 | :------------- | :----------         |
 |-i              |Nom de l'image jpg                                   |
 |-m              |Taille de la matrice pour le tramage ordonné<br>valeurs possibles: 2,3,4,8         |
+|-g              |Modification du gamma<br>valeurs : entre 0.1 et 2.0, 1.0 gamma d'origine           |
+|-b              |Modification de la luminosité<br>valeurs : entre -128 et 128, 0 luminosité d'origine       |
+|-t              |Modification du contraste<br>valeurs : entre 0.1 et 2.0, 1.0 contraste d'origine           |
+|-s              |Modification de la saturation<br>valeurs : entre 0.1 et 2.0, 1.0 saturation d'origine           |
 
 
 
