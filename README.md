@@ -25,7 +25,7 @@ Et donne sur un TO7 :
 
 # Le programme
 Une version windows est disponible dans le répertoire release.
-Il s'agit d'un programme en ligne de commande prenant une liste de paramètre.
+Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 
 
 	$ ./teojpg.exe -h
