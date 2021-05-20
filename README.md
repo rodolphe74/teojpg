@@ -93,5 +93,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 - [Le format SNAP-TO](http://collection.thomson.free.fr/code/articles/prehisto_bulletin/page.php?XI=0&XJ=13)
 - [libcaca](http://caca.zoy.org/wiki/libcaca/study/introduction)
 - [Containers API](https://github.com/bkthomps/Containers)
+- [libjpeg](https://sourceforge.net/projects/libjpeg/files/libjpeg/6b/)
+- [argparse](https://github.com/cofyc/argparse)
 
 
