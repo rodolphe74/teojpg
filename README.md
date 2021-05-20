@@ -75,6 +75,7 @@ Je suis à l'écoute de toute proposition proposition permettant de mieux faire 
 |-s              |Modification de la saturation<br>valeurs : entre 0.1 et 2.0, 1.0 saturation d'origine           |
 |-w              |Utilisation de la quantification Xiaolin Wu [Wu](https://www.ece.mcmaster.ca/~xwu/cq.c)         |
 |-o              |Utilisation de la quantification [Octree](https://fr.wikipedia.org/wiki/Octree)         |
+|-c              |Utilisation de la quantification [Median Cut](https://en.wikipedia.org/wiki/Median_cut)         |
 
 
 
