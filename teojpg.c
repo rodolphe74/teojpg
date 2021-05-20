@@ -26,8 +26,8 @@
 
 
 static const char *const usages[] = {
-	"thomsonjpg24 [options] [[--] args]",
-	"thomsonjpg24 [options]",
+	"teojpg [options] [[--] args]",
+	"teojpg [options]",
 	NULL,
 };
 
