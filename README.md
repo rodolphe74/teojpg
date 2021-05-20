@@ -63,10 +63,11 @@ Il est possible de reprendre le fichier TO-SNAP dans Grafx pour modifier la pale
 
 # Les arguments
 
-| Column 1       | Column 2     | Column 3     |
-| :------------- | :----------: | -----------: |
-|  Cell Contents | More Stuff   | And Again    |
-| You Can Also   | Put Pipes In | Like this \| |
+| Argument       | Description   |
+| :------------- | :----------: |
+|  Cell Contents | More Stuff   |
+|                |sdssqS        |
+| You Can Also   | Put Pipes In |
 
 
 
