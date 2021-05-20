@@ -27,7 +27,7 @@ Et donne sur un TO7 :
 Une version windows est disponible dans le répertoire release.
 Il s'agit d'un programme en ligne de commande prenant une liste de paramètre.
 
-``
+
    $ ./teojpg.exe -h
    Usage: thomsonjpg24 [options] [[--] args]
       or: thomsonjpg24 [options]
@@ -50,7 +50,7 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètre.
        -z, --machine=<str>       Génération pour thomson [TO7, TO770, MO5, MO6, TO8, TO9]
 
    Additional description of the program after the description of the arguments.
-``
+
 
 
 
