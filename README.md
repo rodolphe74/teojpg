@@ -86,7 +86,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 - Nettoyage de code
 
 # Compilation
-Sur windows, un simple make devrait suffire à partir du moment où [git bash](https://git-scm.com/download/win) et [mingw gcc](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/)sont installés. Les librairies utiles à la compilation sont incluses dans les sous répertoires.
+Sur windows, un simple make devrait suffire à partir du moment où [git bash](https://git-scm.com/download/win) et [mingw gcc](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/) sont installés. Les librairies utiles à la compilation sont incluses dans les sous répertoires.
 
 # Les liens
 - [UToPic](https://github.com/Samuel-DEVULDER/UToPiC)
