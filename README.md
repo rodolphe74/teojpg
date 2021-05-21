@@ -80,11 +80,14 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 |-z              |Choix de la machine Thomson<br>valeurs possibles: TO7, TO770, TO8, TO9, MO5, MO6<br>La valeur choisie affecte le fichier basic résultant ainsi que l'utilisation d'une palette spécifique|
 
 # Prochaines versions
-
 - Essayer d'ajouter la diffusion d'erreur OSTROMOUKHOV
 - Gérer les autres modes graphiques Thomson TO8/TO9(+)/MO6, 320x200 4 couleurs et 160x200 16 couleurs sans contraintes.
 - Makefile Linux/BSD
 - Nettoyage de code
+
+# Compilation
+Sur windows, un simple make devrait suffire à partir du moment où [git bash](https://git-scm.com/download/win) et [mingw gcc]((https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/)
+) sont installés. Les librairies utiles à la compilation sont incluses dans les sous répertoires.
 
 # Les liens
 - [UToPic](https://github.com/Samuel-DEVULDER/UToPiC)
