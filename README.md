@@ -95,6 +95,7 @@ Sur windows, un simple make (ou mingw32-make.exe) devrait suffire à partir du m
 - [Le format SNAP-TO](http://collection.thomson.free.fr/code/articles/prehisto_bulletin/page.php?XI=0&XJ=13)
 - [libcaca](http://caca.zoy.org/wiki/libcaca/study/introduction)
 - [Dithering ordonné Yliluoma](https://bisqwit.iki.fi/story/howto/dither/jy/)
+- [Quantification Wu (fast optimal color quantizer)](https://www.ece.mcmaster.ca/~xwu/)
 - [Containers API](https://github.com/bkthomps/Containers)
 - [libjpeg](https://sourceforge.net/projects/libjpeg/files/libjpeg/6b/)
 - [argparse](https://github.com/cofyc/argparse)
