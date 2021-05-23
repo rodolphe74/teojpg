@@ -1,5 +1,6 @@
 #include "thomson.h"
 #include "maputil.h"
+#include "colourconverter.h"
 #include <float.h>
 #include <math.h>
 #include <string.h>
@@ -24,42 +25,69 @@ void init_thomson_rvb()
 
 
 float thomson_linear_levels[16]; /* extern */
+float thomson_levels[16]; /* extern */
+int linear_to_to[256];	/* extern */
+int rgb_to_to[256];	/* extern */
 void init_thomson_linear_levels()
 {
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 16; i++) {
 		thomson_linear_levels[i] = linear_space_f(thomson_level_pc[i]);
+
+		// printf(" ##  thomson_linear_levels[%d]  %f   %d\n", i, thomson_linear_levels[i], thomson_level_pc[i]);
+
+		thomson_levels[i] = thomson_level_pc[i];
+	}
+
+	// for (int i = 0; i < 16; i++)
+	// 	thomson_linear_levels[i] = thomson_level_pc[i];
+
+
+	float r;
+	float dm = FLT_MAX;
+	int cm = 0;
+	for (int i = 0; i < 256; i++) {
+		dm = FLT_MAX;
+		r = i;
+		for (int c = 0; c < 16; c++) {
+			float d = fabs(thomson_linear_levels[c] - r);
+			if (d < dm) {
+				cm = c;
+				dm = d;
+			}
+		}
+		linear_to_to[i] = cm;
+	}
+
+	cm = 0;
+	for (int i = 0; i < 256; i++) {
+		dm = FLT_MAX;
+		r = i;
+		for (int c = 0; c < 16; c++) {
+			float d = fabs(thomson_levels[c] - r);
+
+			// printf("    %f < %f\n", d, dm);
+
+			if (d < dm) {
+				cm = c;
+				dm = d;
+			}
+		}
+		rgb_to_to[i] = cm;
+	}
 }
 
 
 int get_palette_thomson_value(int r, int g, int b)
 {
-	int r_16, g_16, b_16;
+	int r_16 = rgb_to_to[r];
+	int g_16 = rgb_to_to[g];
+	int b_16 = rgb_to_to[b];
 
-	float dist = 10000.0;
+	/*
+	printf("_(%d %d %d) -> (%d %d %d) = %d\n", r, g, b, r_16, g_16, b_16, 
+		(r_16 + 1) + (g_16 + 1) * 16 + (b_16 + 1) * 256 - 273);
+	*/
 
-	for (int i = 0; i < 16; i++) {
-		if (fabs(r - thomson_linear_levels[i]) < dist) {
-			dist = abs(r - thomson_linear_levels[i]);
-			r_16 = i;
-		}
-	}
-	dist = 10000.0;
-	for (int i = 0; i < 16; i++) {
-		if (fabs(g - thomson_linear_levels[i]) < dist) {
-			dist = abs(g - thomson_linear_levels[i]);
-			g_16 = i;
-		}
-	}
-	dist = 10000.0;
-	for (int i = 0; i < 16; i++) {
-		if (fabs(b - thomson_linear_levels[i]) < dist) {
-			dist = abs(b - thomson_linear_levels[i]);
-			b_16 = i;
-		}
-	}
-
-
-	// printf("(%d %d %d) -> (%d %d %d)\n", r, g, b, r_16, g_16, b_16);
 	return (r_16 + 1) + (g_16 + 1) * 16 + (b_16 + 1) * 256 - 273;
 }
 
@@ -198,6 +226,49 @@ void convert_bloc_to_thomson(unsigned char bloc[8], unsigned char thomson_bloc[3
 
 	thomson_bloc[0] = val;
 }
+
+
+
+void thomson_post_trt_palette(PALETTE *src, PALETTE *target)
+{
+	// Les teintes sombres sont modifiées
+	// pour améliorer la correspondance Thomson
+	// Ajout du noir pour améliorer les contrastes dans le tramage
+	HSL d;
+	RGBdec r;
+	d.L = 100;
+	int min = -1;
+	for (int i = 0; i < src->size; i++) {
+		RGBdec c;
+		HSL h;
+		c.R = src->colors[i][0];
+		c.G = src->colors[i][1];
+		c.B = src->colors[i][2];
+		dec2hsl(c, &h);
+
+		if (h.L < 50) {
+			if (h.L < d.L) {
+				d.H = h.H;
+				d.L = h.L;
+				d.S = h.S;
+				min = i;
+			}
+			h.L = 50;	// boost la lum à 50
+			hsl2dec(h, &c);
+		}
+
+		if (min >= 0) {
+			target->colors[i][0] = c.R;
+			target->colors[i][1] = c.G;
+			target->colors[i][2] = c.B;
+		}
+	}
+	
+	target->colors[min][0] = 0;
+	target->colors[min][1] = 0;
+	target->colors[min][2] = 0;
+}
+
 
 
 unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_40 *map_40,

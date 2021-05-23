@@ -481,6 +481,7 @@ int main(int argc, char *argv[])
 			printf("Reduction de palette wu\n");
 			guess_palette_wu(the_image, &the_palette, 16);
 		}
+		thomson_post_trt_palette(&the_palette, &the_palette);
 	} else {
 		// Palette fixe de l'ordinateur
 		printf("Palette fixe %d couleurs\n", the_conf->colors_count);
@@ -490,10 +491,10 @@ int main(int argc, char *argv[])
 	fflush(stdout);
 
 	// passage en CIE XYZ pour le dithering
-	// IMAGE *cie_image = convert_rgb_image_to_linear(the_image);
-	// free_image(the_image);
-	// the_image = cie_image;
-	// convert_rgb_palette_to_linear(&the_palette);
+	IMAGE *cie_image = convert_rgb_image_to_linear(the_image);
+	free_image(the_image);
+	the_image = cie_image;
+	convert_rgb_palette_to_linear(&the_palette);
 
 	if (!floyd) {
 		// dithering
@@ -533,10 +534,10 @@ int main(int argc, char *argv[])
 	}
 
 	// passage en RGB pour l'affichage
-	// IMAGE *rgb_image = convert_linear_image_to_rgb(the_image);
-	// free_image(the_image);
-	// the_image = rgb_image;
-	// convert_linear_palette_to_rgb(&the_palette);
+	IMAGE *rgb_image = convert_linear_image_to_rgb(the_image);
+	free_image(the_image);
+	the_image = rgb_image;
+	convert_linear_palette_to_rgb(&the_palette);
 
 	pixels = create_pixels_array(the_image, &the_palette);
 
