@@ -55,7 +55,7 @@ Les touches -/+ permettent de commuter la taille des pixels (doubles ou simples)
 
 Pour l'instant, seul le mode Bitmap 40, 16/8 couleurs 320x200 avec contraintes de proximité (2 couleurs par bloc de 8 pixels) commun à tous les Thomson est géré.
 
-Lorsqu'une configuration de type MO6, TO8, TO9 est choisie, le programme utilise un algorithme de quantification de palette (par défaut [Wu](https://www.ece.mcmaster.ca/~xwu/cq.c)) pour réduire le nombre de couleurs à 16 parmis les 4096 disponibles sur ces machines. Le résultat affiché sur le PC est en général assez fidèle aux tons de l'image de départ. L'image affichée sur le Thomson va probablement différer de l'image source. Il est en effet difficile de faire une correspondance exacte entre une palette PC sur un ordinateur Thomson (elle est général plus claire).
+Lorsqu'une configuration de type MO6, TO8, TO9 est choisie, le programme utilise un algorithme de quantification de palette (par défaut [Wu](https://www.ece.mcmaster.ca/~xwu/cq.c)) pour réduire le nombre de couleurs à 16 parmis les 4096 disponibles sur ces machines. Le résultat affiché sur le PC est en général assez fidèle aux tons de l'image de départ. L'image affichée sur le Thomson va probablement différer de l'image source. Il est en effet difficile de faire une correspondance exacte entre une palette PC sur un ordinateur Thomson.
 
 Il est possible de jouer sur le gamma, le contraste, la luminosité et la saturation de l'image source pour rectifier le décalage de palette.
 
