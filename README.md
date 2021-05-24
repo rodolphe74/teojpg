@@ -19,7 +19,7 @@ S'affiche sur le PC :
 
 ![teojpg](/samples/kenny_res.png)
 
-Et donne sur un TO7 :
+Et donne sur un TO8 (avec un format TO7 320*200 8 couleurs) :
 
 ![dcmoto](/samples/ken_emul.png)
 
