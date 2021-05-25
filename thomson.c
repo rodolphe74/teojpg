@@ -128,6 +128,17 @@ int get_index_color_thomson_mo(int back_index, int fore_index)
 }
 
 
+void dec_to_binary(int n, char *binaryNum)
+{
+ 
+    int i = 0;
+    while (n > 0) {
+        binaryNum[i] = (n % 2 == 0 ? '0' : '1');
+        n = n / 2;
+        i++;
+    }
+}
+
 
 int count_colors_32(IMAGE *image, PALETTE *palette)
 {
@@ -413,7 +424,8 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_40 *
 						index_color_2 = find_closest_color_index(&pix_2, palette);
 
 						for (int k = 0; k < 256; k++) {
-							itoa(k, binary_string, 2);
+							// itoa(k, binary_string, 2);
+							dec_to_binary(k, binary_string);
 							sprintf(byte, "%*.*s%s", 8 - strlen(binary_string), 8 - strlen(binary_string), "00000000", binary_string);
 
 							for (int l = 0; l < 8; l++)

@@ -16,8 +16,11 @@
 #include <stdint.h>
 #include <math.h>
 #include <libgen.h>
-#include <windows.h>
 #include <list.h>
+
+#ifdef _WIN_
+#include <windows.h>
+#endif
 
 
 
@@ -585,6 +588,8 @@ int main(int argc, char *argv[])
 	end_jpeg_log();
 }
 
+
+#ifdef _WIN_
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevIns, LPSTR lpszArgument, int iShow)
 {
 	LPWSTR *szArglist;
@@ -615,3 +620,4 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevIns, LPSTR lpszArgument, 
 
 	return 0;
 }
+#endif
