@@ -111,4 +111,4 @@ Sur Linux, installer au préalable le paquet SDL2 de développement et lancer un
 
 | Mode graphique | Contraintes     |Couleurs      | Algo           | Quantification | Résultat       |
 | :------------- | :----------     | :----------  | :----------    | :----------    | :----------    |
-|      BM40      | 2 coul / 8 pix   |16 / 4096       | Ostrmoukhov    | Wu             |![L'original](/samples/nimoy_ostro_to9.png)|
+|      BM40      | 2 coul / 8 pix   |16 / 4096       | Ostrmoukhov    | Wu             |![](/samples/nimoy_ostro_to9.png)|
