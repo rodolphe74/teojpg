@@ -111,4 +111,4 @@ Sur Linux, installer au préalable le paquet SDL2 de développement et lancer un
 
 | Mode graphique | Couleurs        | Algo           | Résultat       |
 | :------------- | :----------     | :----------    | :----------    |
-|      BM40      |  16/4096        | Ostrmoukhov    |![L'original](/samples/KennyMcCormick_small.jpg)|
+|      BM40      |  16/4096        | Ostrmoukhov    |![L'original](/samples/nimoy_ostro_to9.png)|
