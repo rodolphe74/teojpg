@@ -312,6 +312,8 @@ int main(int argc, char *argv[])
 	const char *arg_machine = NULL;
 	int arg_matrix = 0;
 	int arg_floyd = 0;
+	enum DITHER { MATRIX, FLOYD, OSTRO };
+	int dither_mode;
 	float arg_gamma = 0.f;
 	float arg_contrast = 0.f;
 	float arg_brightness = 0.f;
@@ -319,21 +321,23 @@ int main(int argc, char *argv[])
 	int arg_octree = 0;
 	int arg_median_cut = 0;
 	int arg_wu = 0;
+	int arg_ostro = 0;
 
 	struct argparse_option arg_options[] = {
 		OPT_HELP(),
 		OPT_GROUP("Basic options"),
-		OPT_STRING('i',		   "input",	  &arg_input,	   "Nom de l'image",					       NULL, 0, 0),
-		OPT_INTEGER('m',	   "matrix",	  &arg_matrix,	   "Tramage ordonné Matrice [2,3,4,8]",			       NULL, 0, 0),
-		OPT_INTEGER('f',	   "floyd",	  &arg_floyd,	   "Tramage Floyd Steinberg [1->10]",			       NULL, 0, 0),
-		OPT_FLOAT('g',		   "gamma",	  &arg_gamma,	   "Correction gamma [0.1->2.0]",					       NULL, 0, 0),
-		OPT_FLOAT('b',		   "brightness",  &arg_brightness, "Luminosité [-128->+128]",				       NULL, 0, 0),
-		OPT_FLOAT('t',		   "contrast",	  &arg_contrast,   "Contraste [0.1->2.0]",				       NULL, 0, 0),
-		OPT_FLOAT('s',		   "saturation",  &arg_saturation, "Saturation [0.1->2.0]",				       NULL, 0, 0),
-		OPT_BOOLEAN('w',	   "wu",	  &arg_wu,	   "Quantification Wu",					       NULL, 0, 0),
-		OPT_BOOLEAN('o',	   "octree",	  &arg_octree,	   "Quantification Octree",				       NULL, 0, 0),
-		OPT_BOOLEAN('c',	   "median",	  &arg_median_cut, "Quantification median-cut",				       NULL, 0, 0),
-		OPT_STRING('z',		   "machine",	  &arg_machine,	   "Génération pour thomson [TO7, TO770, MO5, MO6, TO8, TO9]", NULL, 0, 0),
+		OPT_STRING('i',		   "input",	    &arg_input,	     "Nom de l'image",						 NULL, 0, 0),
+		OPT_INTEGER('m',	   "matrix",	    &arg_matrix,     "Tramage ordonné Matrice [2,3,4,8]",			 NULL, 0, 0),
+		OPT_INTEGER('f',	   "floyd",	    &arg_floyd,	     "Tramage Floyd Steinberg [1->10]",				 NULL, 0, 0),
+		OPT_BOOLEAN('k',	   "ostromoukhov",  &arg_ostro,	     "Tramage adaptif ostromoukof",				 NULL, 0, 0),
+		OPT_FLOAT('g',		   "gamma",	    &arg_gamma,	     "Correction gamma [0.1->2.0]",				 NULL, 0, 0),
+		OPT_FLOAT('b',		   "brightness",    &arg_brightness, "Luminosité [-128->+128]",					 NULL, 0, 0),
+		OPT_FLOAT('t',		   "contrast",	    &arg_contrast,   "Contraste [0.1->2.0]",					 NULL, 0, 0),
+		OPT_FLOAT('s',		   "saturation",    &arg_saturation, "Saturation [0.1->2.0]",					 NULL, 0, 0),
+		OPT_BOOLEAN('w',	   "wu",	    &arg_wu,	     "Quantification Wu",					 NULL, 0, 0),
+		OPT_BOOLEAN('o',	   "octree",	    &arg_octree,     "Quantification Octree",					 NULL, 0, 0),
+		OPT_BOOLEAN('c',	   "median",	    &arg_median_cut, "Quantification median-cut",				 NULL, 0, 0),
+		OPT_STRING('z',		   "machine",	    &arg_machine,    "Génération pour thomson [TO7, TO770, MO5, MO6, TO8, TO9]", NULL, 0, 0),
 		OPT_END(),
 	};
 
@@ -343,21 +347,38 @@ int main(int argc, char *argv[])
 	argparse_describe(&argparse, "\nA brief description of what the program does and how it works.", "\nAdditional description of the program after the description of the arguments.");
 	argc = argparse_parse(&argparse, argc, (const char **)argv);
 
+	// if (arg_matrix) {
+	// 	matrix_size = arg_matrix;
+	// 	printf("Dithering ordonne %d\n", matrix_size);
+	// 	floyd = 0;
+	// }
+
+	// if (arg_floyd > 0 && arg_floyd <= 10) {
+	// 	printf("Dithering Floyd Steinberg - utilisation de la matrice %s\n", floyd_matrix[arg_floyd - 1].name);
+	// 	floyd = 1;
+	// 	matrix_size = 0;
+	// } else if (arg_floyd > 10) {
+	// 	printf("Dithering Floyd Steinberg - utilisation de la matrice standard\n", arg_floyd);
+	// 	floyd = 1;
+	// 	matrix_size = 0;
+	// }
+
+
 	if (arg_matrix) {
 		matrix_size = arg_matrix;
 		printf("Dithering ordonne %d\n", matrix_size);
-		floyd = 0;
+		dither_mode = MATRIX;
+	} else if (arg_floyd > 0 && arg_floyd <= 10) {
+		printf("Dithering Floyd Steinberg - utilisation de la matrice %s\n", floyd_matrix[arg_floyd - 1].name);
+		matrix_size = 0;
+		dither_mode = FLOYD;
+	} else if (arg_floyd > 0 && arg_floyd > 10) {
+		printf("Dithering Floyd Steinberg - utilisation de la matrice standard\n", arg_floyd);
+		matrix_size = 0;
+	} else if (arg_ostro) {
+		dither_mode = OSTRO;
 	}
 
-	if (arg_floyd > 0 && arg_floyd <= 10) {
-		printf("Dithering Floyd Steinberg - utilisation de la matrice %s\n", floyd_matrix[arg_floyd - 1].name);
-		floyd = 1;
-		matrix_size = 0;
-	} else if (arg_floyd > 10) {
-		printf("Dithering Floyd Steinberg - utilisation de la matrice standard\n", arg_floyd);
-		floyd = 1;
-		matrix_size = 0;
-	}
 
 
 	if (arg_input != NULL) {
@@ -493,14 +514,35 @@ int main(int argc, char *argv[])
 
 	fflush(stdout);
 
+
+	/*
+	 * for (int i = 0; i < 16; i++) {
+	 *      if (i%2 == 0) {
+	 *              the_palette.colors[i][0] = 0;
+	 *              the_palette.colors[i][1] = 0;
+	 *              the_palette.colors[i][2] = 0;
+	 *      } else {
+	 *              the_palette.colors[i][0] = 255;
+	 *              the_palette.colors[i][1] = 255;
+	 *              the_palette.colors[i][2] = 255;
+	 *      }
+	 * }
+	 */
+
+
 	// passage en CIE XYZ pour le dithering
 	IMAGE *cie_image = convert_rgb_image_to_linear(the_image);
+
 	free_image(the_image);
 	the_image = cie_image;
 	convert_rgb_palette_to_linear(&the_palette);
 
-	if (!floyd) {
-		// dithering
+
+
+
+
+	if (/*!floyd*/ dither_mode == MATRIX) {
+		// dithering ordonné
 		if (matrix_size == 0) {
 			the_matrix = NULL;
 		} else if (matrix_size == 2) {
@@ -530,14 +572,21 @@ int main(int argc, char *argv[])
 		free_image(the_image);
 		the_image = ordered_image;
 		free(the_matrix);
-	} else {
+	} else if (dither_mode == FLOYD) {
+		// dithering type Floyd Steinberg
 		IMAGE *fs_image = floyd_steinberg_dither(the_image, &the_palette, &floyd_matrix[arg_floyd - 1]);
+		free_image(the_image);
+		the_image = fs_image;
+	} else {
+		// Ostromoukhov
+		IMAGE *fs_image = ostromoukhov_dither(the_image, &the_palette);
 		free_image(the_image);
 		the_image = fs_image;
 	}
 
 	// passage en RGB pour l'affichage
 	IMAGE *rgb_image = convert_linear_image_to_rgb(the_image);
+
 	free_image(the_image);
 	the_image = rgb_image;
 	convert_linear_palette_to_rgb(&the_palette);

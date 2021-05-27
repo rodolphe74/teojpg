@@ -24,10 +24,10 @@ void init_thomson_rvb()
 }
 
 
-float thomson_linear_levels[16]; /* extern */
-float thomson_levels[16]; /* extern */
-int linear_to_to[256];	/* extern */
-int rgb_to_to[256];	/* extern */
+float thomson_linear_levels[16];        /* extern */
+float thomson_levels[16];               /* extern */
+int linear_to_to[256];                  /* extern */
+int rgb_to_to[256];                     /* extern */
 void init_thomson_linear_levels()
 {
 	for (int i = 0; i < 16; i++) {
@@ -45,6 +45,7 @@ void init_thomson_linear_levels()
 	float r;
 	float dm = FLT_MAX;
 	int cm = 0;
+
 	for (int i = 0; i < 256; i++) {
 		dm = FLT_MAX;
 		r = i;
@@ -84,9 +85,9 @@ int get_palette_thomson_value(int r, int g, int b)
 	int b_16 = rgb_to_to[b];
 
 	/*
-	printf("_(%d %d %d) -> (%d %d %d) = %d\n", r, g, b, r_16, g_16, b_16, 
-		(r_16 + 1) + (g_16 + 1) * 16 + (b_16 + 1) * 256 - 273);
-	*/
+	 * printf("_(%d %d %d) -> (%d %d %d) = %d\n", r, g, b, r_16, g_16, b_16,
+	 *      (r_16 + 1) + (g_16 + 1) * 16 + (b_16 + 1) * 256 - 273);
+	 */
 
 	return (r_16 + 1) + (g_16 + 1) * 16 + (b_16 + 1) * 256 - 273;
 }
@@ -130,13 +131,13 @@ int get_index_color_thomson_mo(int back_index, int fore_index)
 
 void dec_to_binary(int n, char *binaryNum)
 {
- 
-    int i = 0;
-    while (n > 0) {
-        binaryNum[i] = (n % 2 == 0 ? '0' : '1');
-        n = n / 2;
-        i++;
-    }
+	int i = 0;
+
+	while (n > 0) {
+		binaryNum[i] = (n % 2 == 0 ? '0' : '1');
+		n = n / 2;
+		i++;
+	}
 }
 
 
@@ -190,6 +191,7 @@ int count_colors_32(IMAGE *image, PALETTE *palette)
 		current_key = map_higher(colors, current_key);
 		color_index++;
 	}
+
 	map_destroy(colors);
 
 	return palette->size;
@@ -197,12 +199,40 @@ int count_colors_32(IMAGE *image, PALETTE *palette)
 
 
 
-float compare_blocs_f(unsigned char src_bloc[8], unsigned char cmp_bloc[8], PALETTE *palette)
+float compare_blocs_f(unsigned char src_bloc[8], unsigned char cmp_bloc[8], unsigned char prev_bloc[8],
+	int first_bloc, PALETTE *palette)
 {
 	float delta = 0.;
 
 	for (int i = 0; i < 8; i++)
-		delta += color_delta_f(palette->colors[src_bloc[i]], palette->colors[cmp_bloc[i]]);
+			delta += color_delta_f(palette->colors[src_bloc[i]], palette->colors[cmp_bloc[i]]);
+
+	// if (first_bloc) {
+	// 	for (int i = 0; i < 8; i++)
+	// 		delta += color_delta_f(palette->colors[src_bloc[i]], palette->colors[cmp_bloc[i]]);
+	// } else {
+	// 	// On va essayer d'inclure le bloc précédent dans le calcul du delta
+	// 	int c1_prev, c2_prev;
+	// 	c1_prev = prev_bloc[0];
+	// 	c2_prev = c1_prev;
+	// 	for (int i = 1; i < 8; i++)
+	// 		if (prev_bloc[i] != c1_prev) {
+	// 			c2_prev = prev_bloc[i];
+	// 			break;
+	// 		}
+	// 	// printf("Couleurs précédentes:%d %d\n", c1_prev, c2_prev);
+
+	// 	for (int i = 0; i < 8; i++) {
+	// 		delta += color_delta_f(palette->colors[src_bloc[i]], palette->colors[cmp_bloc[i]]);
+	// 		// printf("delta %f", delta);
+	// 		if (cmp_bloc[i] == c1_prev /*|| cmp_bloc[i] == c2_prev*/) {
+	// 			// printf("bonus");
+	// 			delta -= 500;
+	// 		}
+	// 		// printf("> %f\n", delta);
+	// 	}
+	// }
+
 	return delta;
 }
 
@@ -247,8 +277,10 @@ void thomson_post_trt_palette(PALETTE *src, PALETTE *target)
 	// Ajout du noir pour améliorer les contrastes dans le tramage
 	HSL d;
 	RGBdec r;
+
 	d.L = 100;
 	int min = -1;
+
 	for (int i = 0; i < src->size; i++) {
 		RGBdec c;
 		HSL h;
@@ -264,7 +296,7 @@ void thomson_post_trt_palette(PALETTE *src, PALETTE *target)
 				d.S = h.S;
 				min = i;
 			}
-			h.L = 50;	// boost la lum à 50
+			h.L = 50;       // boost la lum à 50
 			hsl2dec(h, &c);
 		}
 
@@ -274,11 +306,12 @@ void thomson_post_trt_palette(PALETTE *src, PALETTE *target)
 			target->colors[i][2] = c.B;
 		}
 	}
-	
+
 	target->colors[min][0] = 0;
 	target->colors[min][1] = 0;
 	target->colors[min][2] = 0;
 }
+
 
 
 
@@ -314,6 +347,7 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_40 *
 	char byte[9];
 	unsigned char src_bloc[8];
 	unsigned char cmp_bloc[8];
+	unsigned char prev_bloc[8];
 	unsigned char best_bloc[8];
 
 	// Thomson TO : Mémoire écran &h4000 à &h5f40 exclu
@@ -398,8 +432,8 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_40 *
 				guess_8_image->height = 1;
 				guess_8_image->pixels = guess_8_pixels;
 
-				count_colors_32(guess_8_image, &guess_8_palette);
 
+				count_colors_32(guess_8_image, &guess_8_palette);
 
 				// exploration des combinatoires
 				int comb = 0;
@@ -431,13 +465,20 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_40 *
 							for (int l = 0; l < 8; l++)
 								cmp_bloc[l] = (byte[l] == '0' ? index_color_1 : index_color_2);
 
-							// comp
-							// int delta = compare_blocs(src_bloc, cmp_bloc, palette);
-							float delta = compare_blocs_f(src_bloc, cmp_bloc, palette);
+							// Comparaison : les tableaux contiennent les indexes de palette (source et la combinaison générée en cours)
+							// Comment faire pour éviter au mieux les effets de colors clash ?
+							// Pour l'instant : somme des différences entre chaque couleur du bloc de 8 pixels et on prend la distance
+							// la plus courte.
+							// Le bloc précédent au bloc courant est passé en paramètre. Je ne sais pas encore comment l'utiliser.
+							float delta = compare_blocs_f(src_bloc, cmp_bloc, prev_bloc, x < 8 ? 1 : 0, palette);
 							if (delta < best_delta) {
 								best_delta = delta;
 								memcpy(best_bloc, cmp_bloc, 8);
 							}
+
+							// Sauvegarde du bloc précédent
+							memcpy(prev_bloc, best_bloc, 8);
+
 							comb++;
 						}
 					}
@@ -484,6 +525,11 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_40 *
 
 	return pixels;
 }
+
+
+
+
+
 
 
 void init_map_40(MAP_40 *map_40)

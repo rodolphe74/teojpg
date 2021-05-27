@@ -74,9 +74,9 @@ copy_release:
 clean:
 	$(RM) *.o *.a teojpg
 	
-#~ indent:
-#~ 	uncrustify --replace -c C:/ProgramData/chocolatey/lib/uncrustify/tools/cfg/linux.cfg *.c  *.h
-#~ 	$(RM) *unc-backup*
+indent:
+	uncrustify --replace -c ./crust_linux.cfg *.c  *.h
+	$(RM) *unc-backup*
 
-#~ indent_clean:
-#~ 	$(RM) *unc-backup*
+indent_clean:
+	$(RM) *unc-backup*
