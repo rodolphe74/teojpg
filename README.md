@@ -40,6 +40,7 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 		-i, --input=<str>         Nom de l'image
 		-m, --matrix=<int>        Tramage ordonné Matrice [2,3,4,8]
 		-f, --floyd=<int>         Tramage Floyd Steinberg [1->10]
+		-k, --ostromoukhov        Tramage adaptif ostromoukof
 		-g, --gamma=<flt>         Correction gamma [0.1->2.0]
 		-b, --brightness=<flt>    Luminosité [-128->+128]
 		-t, --contrast=<flt>      Contraste [0.1->2.0]
@@ -70,6 +71,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 |-i              |Nom de l'image jpg                                   |
 |-m              |Taille de la matrice pour le tramage ordonné<br>valeurs possibles: 2, 3, 4, 8<br>Le nombre de tons (et de trames) augmente avec la taille de la matrice         |
 |-f              |Matrice pour le tramage diffusion d'erreurs<br>valeurs possibles: de 1 à 10<br>1-Floyd Steinberg<br>2-Jarvis<br>3-Zhigang<br>4-Shiau<br>5-Shiau 2<br>6-Stucki<br>7-Burkes<br>8-Sierra<br>9-Atkinson<br>10-Knuth|
+|-g              |Tramage selon l'algorithme Ostromoukhov           |
 |-g              |Modification du gamma<br>valeurs : entre 0.1 et 2.0, 1.0 gamma d'origine           |
 |-b              |Modification de la luminosité<br>valeurs : entre -128 et 128, 0 luminosité d'origine       |
 |-t              |Modification du contraste<br>valeurs : entre 0.1 et 2.0, 1.0 contraste d'origine           |
