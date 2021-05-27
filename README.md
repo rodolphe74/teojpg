@@ -106,3 +106,9 @@ Sur Linux, installer au préalable le paquet SDL2 de développement et lancer un
 - [SDL2-devel-2.0.14-mingw.tar.gz](https://www.libsdl.org/download-2.0.php)
 - [mingw gcc 64 bits pour Windows](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/)
 
+
+# Quelques exemples
+
+| Mode graphique | Couleurs        | Algo           | Résultat       |
+| :------------- | :----------     | :----------    | :----------    |
+|                |                      |           |[](/samples/nimoy_ostro_to9.png)|
