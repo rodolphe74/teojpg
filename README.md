@@ -87,6 +87,8 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 - ~~Makefile Linux/BSD~~
 - Nettoyage de code
 
+(~~barré~~ = fait)
+
 # Compilation
 Sur windows, un simple ``make -f Makefile.win`` (ou ``mingw32-make.exe``) devrait suffire à partir du moment où [git bash](https://git-scm.com/download/win) et [mingw gcc](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/) sont installés. Les librairies utiles à la compilation sont incluses dans les sous répertoires. Git pour windows inclut une version de bash pour windows ainsi que la plupart des commandes Unix, ce qui est bien pratique pour unifier les commandes de compilation.
 
