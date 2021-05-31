@@ -200,12 +200,12 @@ int count_colors_32(IMAGE *image, PALETTE *palette)
 
 
 float compare_blocs_f(unsigned char src_bloc[8], unsigned char cmp_bloc[8], unsigned char prev_bloc[8],
-	int first_bloc, PALETTE *palette)
+		      int first_bloc, PALETTE *palette)
 {
 	float delta = 0.;
 
 	for (int i = 0; i < 8; i++)
-			delta += color_delta_f(palette->colors[src_bloc[i]], palette->colors[cmp_bloc[i]]);
+		delta += color_delta_f(palette->colors[src_bloc[i]], palette->colors[cmp_bloc[i]]);
 
 	// if (first_bloc) {
 	// 	for (int i = 0; i < 8; i++)
@@ -315,7 +315,7 @@ void thomson_post_trt_palette(PALETTE *src, PALETTE *target)
 
 
 
-unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_40 *map_40,
+unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_SEG *map_40,
 				       MACHINE_CONF *conf, char *target_name)
 {
 	char basic_filename[256];
@@ -532,16 +532,16 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_40 *
 
 
 
-void init_map_40(MAP_40 *map_40)
+void init_map_seg(MAP_SEG *map_seg)
 {
-	map_40->rama = list_init(sizeof(unsigned char));
-	map_40->ramb = list_init(sizeof(unsigned char));
+	map_seg->rama = list_init(sizeof(unsigned char));
+	map_seg->ramb = list_init(sizeof(unsigned char));
 }
 
-void free_map_40(MAP_40 *map_40)
+void free_map_seg(MAP_SEG *map_seg)
 {
-	list_destroy(map_40->rama);
-	list_destroy(map_40->ramb);
+	list_destroy(map_seg->rama);
+	list_destroy(map_seg->ramb);
 }
 
 
@@ -579,7 +579,7 @@ void write_segment(list *target, FILE *f, list *buffer_list, int i, unsigned cha
 	}
 }
 
-void compress(list *target, FILE *f, list *buffer_list)
+void compress(list *target, FILE *f, list *buffer_list, int enclose)
 {
 	// Traitement du buffer;
 	int i = 0;
@@ -616,11 +616,13 @@ void compress(list *target, FILE *f, list *buffer_list)
 	if (seg > 0)
 		write_segment(target, f, buffer_list, i, seg);
 
-	// cloture
-	unsigned char cloture[2] = { 0, 0 };
+	// cloture ?
+	if (enclose) {
+		unsigned char cloture[2] = { 0, 0 };
 
-	list_add_last(*target, &cloture[0]);
-	list_add_last(*target, &cloture[1]);
+		list_add_last(*target, &cloture[0]);
+		list_add_last(*target, &cloture[1]);
+	}
 }
 
 
@@ -653,7 +655,7 @@ void transpose_data_map_40(int columns, int lines, list *src, list *target)
 	}
 }
 
-void save_map_40_col(char *filename, MAP_40 *map_40, PALETTE *palette)
+void save_map_40_col(char *filename, MAP_SEG *map_40, PALETTE *palette)
 {
 	list buffer_list = list_init(sizeof(unsigned char));
 	int r, g, b;
@@ -681,7 +683,7 @@ void save_map_40_col(char *filename, MAP_40 *map_40, PALETTE *palette)
 	}
 
 	transpose_data_map_40(map_40->columns, map_40->lines, &map_40->rama, &buffer_list);
-	compress(&target_buffer_list, fout, &buffer_list);
+	compress(&target_buffer_list, fout, &buffer_list, 1);
 
 	list_clear(buffer_list);
 
@@ -694,11 +696,12 @@ void save_map_40_col(char *filename, MAP_40 *map_40, PALETTE *palette)
 	////////////////////
 
 	transpose_data_map_40(map_40->columns, map_40->lines, &map_40->ramb, &buffer_list);
-	compress(&target_buffer_list, fout, &buffer_list);
+	compress(&target_buffer_list, fout, &buffer_list, 1);
 
 	// Ecriture de l'entete
 	// unsigned short size = (unsigned short) list_size(target_buffer_list) + 3;
-	unsigned short size = (unsigned short)list_size(target_buffer_list) + 3 + 40;
+	// unsigned short size = (unsigned short)list_size(target_buffer_list) + 3 + 40;
+	unsigned short size = (unsigned short)list_size(target_buffer_list) + 3 + 39;
 
 	if (size % 2 == 1) {
 		// Apparement, la taille doit être paire
@@ -725,23 +728,44 @@ void save_map_40_col(char *filename, MAP_40 *map_40, PALETTE *palette)
 	}
 
 	// Ecriture footer TO-SNAP
+	/*
+	 * unsigned char to_snap[40];
+	 *
+	 * memset(to_snap, 0, 40);
+	 * to_snap[0] = 0; // 16 couleurs 40 colonnes
+	 * to_snap[2] = 0; // tour de l'écran
+	 * to_snap[4] = 0; // mode 0 console
+	 * for (int i = 0; i < 16; i++) {
+	 *      r = palette->colors[i][0];
+	 *      g = palette->colors[i][1];
+	 *      b = palette->colors[i][2];
+	 *      short thomson_palette_value = get_palette_thomson_value(r, g, b);
+	 *      to_snap[6 + i * 2] = (thomson_palette_value >> 8) & 255;;
+	 *      to_snap[6 + i * 2 + 1] = thomson_palette_value & 255;
+	 * }
+	 * to_snap[38] = 0xA5;
+	 * to_snap[39] = 0x5A;
+	 * fwrite(to_snap, sizeof(unsigned char), 40, fout);
+	 */
+
+	// Ecriture footer TO-SNAP
 	unsigned char to_snap[40];
 
-	memset(to_snap, 0, 40);
+	memset(to_snap, 0, 39);
 	to_snap[0] = 0; // 16 couleurs 40 colonnes
 	to_snap[2] = 0; // tour de l'écran
-	to_snap[4] = 0; // mode 0 console
+	to_snap[4] = 0; // mode 3 console
 	for (int i = 0; i < 16; i++) {
 		r = palette->colors[i][0];
 		g = palette->colors[i][1];
 		b = palette->colors[i][2];
 		short thomson_palette_value = get_palette_thomson_value(r, g, b);
-		to_snap[6 + i * 2] = (thomson_palette_value >> 8) & 255;;
-		to_snap[6 + i * 2 + 1] = thomson_palette_value & 255;
+		to_snap[5 + i * 2] = (thomson_palette_value >> 8) & 255;
+		to_snap[5 + i * 2 + 1] = thomson_palette_value & 255;
 	}
-	to_snap[38] = 0xA5;
-	to_snap[39] = 0x5A;
-	fwrite(to_snap, sizeof(unsigned char), 40, fout);
+	to_snap[37] = 0xA5;
+	to_snap[38] = 0x5A;
+	fwrite(to_snap, sizeof(unsigned char), 39, fout);
 
 	// Ecriture du footer
 	unsigned char footer[] = { 0, 0, 0, 0, 0 };
@@ -775,6 +799,196 @@ void save_map_40_col(char *filename, MAP_40 *map_40, PALETTE *palette)
 	fprintf(tosnap_out, "100 PUT(0,0),T%%(10000)\n");
 	fflush(tosnap_out);
 	fclose(tosnap_out);
+
+	fflush(stdout);
+}
+
+
+
+void save_bm16_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, char *target_name)
+{
+	unsigned short four_pixels;
+	char data_values[256];
+	char str_value[10];
+	int line_count = 1000;
+	int r, g, b;
+
+	char basic_filename[256];
+	sprintf(basic_filename, "%s.bas", target_name);
+
+	// Création basic
+	FILE *basic_out = fopen(basic_filename, "w");
+
+	fprintf(basic_out, "1 CLS:CONSOLE ,,,,3\n");
+	fprintf(basic_out, "2 L=%d:C=%d:E=0\n", source->height, source->width / 4);
+
+	for (int i = 0; i < palette->size; i++) {
+		r = palette->colors[i][0];
+		g = palette->colors[i][1];
+		b = palette->colors[i][2];
+		fprintf(basic_out, "%d PALETTE %d,%d\n", i + 3, i, get_palette_thomson_value(r, g, b));
+	}
+
+
+	fprintf(basic_out, "21 FOR Y=1 TO L\n");
+	fprintf(basic_out, "22 E=0\n");
+	fprintf(basic_out, "30 FOR X=1 TO C\n");
+	fprintf(basic_out, "31 READ A\n");
+	fprintf(basic_out, "32 GOSUB 200\n");
+	fprintf(basic_out, "33 REM PRINT A,E,B1,B2,\"-\",C1,C2,C3,C4\n");
+	fprintf(basic_out, "34 PSET(E,Y),C1\n");
+	fprintf(basic_out, "35 PSET(E+1,Y),C2\n");
+	fprintf(basic_out, "36 PSET(E+2,Y),C3\n");
+	fprintf(basic_out, "37 PSET(E+3,Y),C4\n");
+	fprintf(basic_out, "39 E=E+4\n");
+	fprintf(basic_out, "40 NEXT X\n");
+	fprintf(basic_out, "45 NEXT Y\n");
+	fprintf(basic_out, "46 POKE&H605F,0\n");
+	fprintf(basic_out, "50 END\n");
+	fprintf(basic_out, "200 B=A\n");
+	fprintf(basic_out, "210 B1=INT(B/256)\n");
+	fprintf(basic_out, "220 B2=B-(B1*256)\n");
+	fprintf(basic_out, "221 C1=INT(B1/16)\n");
+	fprintf(basic_out, "222 C2=B1-(C1*16)\n");
+	fprintf(basic_out, "223 C3=INT(B2/16)\n");
+	fprintf(basic_out, "224 C4=B2-(C3*16)\n");
+	fprintf(basic_out, "230 RETURN\n");
+
+	for (int y = 0; y < source->height; y++) {
+		memset(data_values, 0, 256);
+		sprintf(str_value, "%d DATA ", line_count);
+		strcat(data_values, str_value);
+		for (int x = 0; x < source->width - 1; x += 4) {
+			// pas de 4 pixels -> 4*4 = 16 bits -> 2 octets
+			four_pixels = pixels[y * source->width + x] << 12
+				      | pixels[y * source->width + x + 1] << 8
+				      | pixels[y * source->width + x + 2] << 4
+				      | pixels[y * source->width + x + 3];
+			sprintf(str_value, "%d,", four_pixels);
+			strcat(data_values, str_value);
+		}
+		data_values[strlen(data_values) - 1] = 0;
+		strcat(data_values, "\n");
+		fprintf(basic_out, data_values);
+		line_count++;
+	}
+	fflush(basic_out);
+	fclose(basic_out);
+}
+
+
+
+void save_map_16(char *filename, MAP_SEG *map_16, PALETTE *palette, int x_count)
+{
+	// int columns_count = map_16->columns * 8;
+	int lines_count = map_16->lines * 8;
+
+	int r, g, b;
+
+	FILE *fout;
+	char map_filename[256];
+
+	sprintf(map_filename, "%s.map", filename);
+	if ((fout = fopen(map_filename, "wb")) == NULL) {
+		fprintf(stderr, "Impossible d'ouvrir le fichier données en écriture\n");
+		return;
+	}
+
+
+	list buffer_list = list_init(sizeof(unsigned char));
+	list target_buffer_list = list_init(sizeof(unsigned char));
+
+	for (int x = 0; x < x_count; x++) {
+		for (int y = 0; y < lines_count; y++) {
+			unsigned char two_pixels_a;
+			list_get_at(&two_pixels_a, map_16->rama, x * lines_count + y);
+			list_add_last(buffer_list, &two_pixels_a);
+		}
+
+		for (int y = 0; y < lines_count; y++) {
+			unsigned char two_pixels_b;
+			list_get_at(&two_pixels_b, map_16->ramb, x * lines_count + y);
+			list_add_last(buffer_list, &two_pixels_b);
+		}
+	}
+
+	// Compression des RAMA/RAMB entrelacés sans cloture
+	compress(&target_buffer_list, fout, &buffer_list, 0);
+
+	// cloture rama/ramb
+	unsigned char cloture[4] = { 0, 0, 0, 0 };
+
+	list_add_last(target_buffer_list, &cloture[0]);
+	list_add_last(target_buffer_list, &cloture[1]);
+	list_add_last(target_buffer_list, &cloture[2]);
+	list_add_last(target_buffer_list, &cloture[3]);
+
+
+	// Ecriture de l'entete
+	unsigned short size = (unsigned short)list_size(target_buffer_list) + 3 + 39;
+
+
+
+	if (size % 2 == 1) {
+		// Apparement, la taille doit être paire
+		unsigned char zero = 0;
+		list_add_last(target_buffer_list, &zero);
+		size++;
+	}
+
+
+
+	unsigned char header[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	header[2] = size & 255;
+	header[1] = (size >> 8) & 255;
+	header[5] = 0x40;       // BM16
+	header[6] = map_16->columns - 1;
+	header[7] = map_16->lines - 1;
+
+	fwrite(header, sizeof(unsigned char), 8, fout);
+
+	// Ecriture du buffer map compressé dans le fichier de sortie
+	unsigned char current;
+
+	for (int i = 0; i < list_size(target_buffer_list); i++) {
+		list_get_at(&current, target_buffer_list, i);
+		fwrite(&current, sizeof(unsigned char), 1, fout);
+	}
+
+
+	// Ecriture footer TO-SNAP
+	unsigned char to_snap[40];
+
+	memset(to_snap, 0, 39);
+	// to_snap[0] = 0x40; // BM16
+	to_snap[0] = 0x80;      // ?
+	to_snap[2] = 0;         // tour de l'écran
+	to_snap[4] = 3;         // mode 3 console
+	for (int i = 0; i < 16; i++) {
+		r = palette->colors[i][0];
+		g = palette->colors[i][1];
+		b = palette->colors[i][2];
+		short thomson_palette_value = get_palette_thomson_value(r, g, b);
+		to_snap[5 + i * 2] = (thomson_palette_value >> 8) & 255;
+		to_snap[5 + i * 2 + 1] = thomson_palette_value & 255;
+	}
+	to_snap[37] = 0xA5;
+	to_snap[38] = 0x5A;
+	fwrite(to_snap, sizeof(unsigned char), 39, fout);
+
+	// Ecriture du footer
+	unsigned char footer[] = { 0, 0, 0, 0, 0 };
+
+	footer[0] = 255;
+	fwrite(footer, sizeof(unsigned char), 5, fout);
+
+
+	fflush(fout);
+	fclose(fout);
+
+	list_destroy(buffer_list);
+	list_destroy(target_buffer_list);
 
 	fflush(stdout);
 }

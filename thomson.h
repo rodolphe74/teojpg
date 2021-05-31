@@ -4,13 +4,17 @@
 #include "pixel.h"
 #include <list.h>
 
-struct MAP_40_STRUCT {
+
+static const char *BM_MODE_STRING[] = { "NONE", "BM40", "BM16", "BM80", "BM4" };
+
+
+struct MAP_SEG_STRUCT {
 	unsigned char	columns;
 	unsigned char	lines;
 	list		rama;
 	list		ramb;
 };
-typedef struct MAP_40_STRUCT MAP_40;
+typedef struct MAP_SEG_STRUCT MAP_SEG;
 
 
 static int colors_16[][3] = {
@@ -51,6 +55,7 @@ struct MACHINE_CONF_STRUCT {
 	int	has_4096_colors;
 	int	commut_address;
 	int	start_screen_address;
+	int	modes[5]; // BM_MODE_STRING
 };
 typedef struct MACHINE_CONF_STRUCT MACHINE_CONF;
 
@@ -59,7 +64,8 @@ static MACHINE_CONF TO9_CONF = {
 	.palette		= NULL,
 	.has_4096_colors	= 1,
 	.commut_address		= 0xE7C3,
-	.start_screen_address	= 0x4000
+	.start_screen_address	= 0x4000,
+	.modes			= { 1, 2, 3, 4 }
 };
 
 static MACHINE_CONF TO9_PLUS_CONF = {
@@ -67,7 +73,8 @@ static MACHINE_CONF TO9_PLUS_CONF = {
 	.palette		= NULL,
 	.has_4096_colors	= 1,
 	.commut_address		= 0xE7C3,
-	.start_screen_address	= 0x4000
+	.start_screen_address	= 0x4000,
+	.modes			= { 1, 2, 3, 4 }
 };
 
 static MACHINE_CONF TO8_CONF = {
@@ -75,7 +82,8 @@ static MACHINE_CONF TO8_CONF = {
 	.palette		= NULL,
 	.has_4096_colors	= 1,
 	.commut_address		= 0xE7C3,
-	.start_screen_address	= 0x4000
+	.start_screen_address	= 0x4000,
+	.modes			= { 1, 2, 3, 4 }
 };
 
 static MACHINE_CONF MO6_CONF = {
@@ -83,7 +91,8 @@ static MACHINE_CONF MO6_CONF = {
 	.palette		= NULL,
 	.has_4096_colors	= 1,
 	.commut_address		= 0xA7C0,
-	.start_screen_address	= 0x0000
+	.start_screen_address	= 0x0000,
+	.modes			= { 1, 2, 3, 4 }
 };
 
 static MACHINE_CONF MO5_CONF = {
@@ -91,7 +100,8 @@ static MACHINE_CONF MO5_CONF = {
 	.palette		= colors_16,
 	.has_4096_colors	= 0,
 	.commut_address		= 0xA7C0,
-	.start_screen_address	= 0x0000
+	.start_screen_address	= 0x0000,
+	.modes			= { 1 }
 };
 
 static MACHINE_CONF TO7_70_CONF = {
@@ -99,7 +109,8 @@ static MACHINE_CONF TO7_70_CONF = {
 	.palette		= colors_16,
 	.has_4096_colors	= 0,
 	.commut_address		= 0xE7C3,
-	.start_screen_address	= 0x4000
+	.start_screen_address	= 0x4000,
+	.modes			= { 1 }
 };
 
 static MACHINE_CONF TO7_CONF = {
@@ -107,7 +118,8 @@ static MACHINE_CONF TO7_CONF = {
 	.palette		= colors_8,
 	.has_4096_colors	= 0,
 	.commut_address		= 0xE7C3,
-	.start_screen_address	= 0x4000
+	.start_screen_address	= 0x4000,
+	.modes			= { 1 }
 };
 
 
@@ -141,21 +153,33 @@ void thomson_post_trt_palette(PALETTE *src, PALETTE *target);
 // Traitement thomson 320x200 16 couleurs (couleur unique sur bloc 8 pixels)
 // Image retournee doit etre liberee par l'appelant
 //------------------------------------------------------------------------------
-unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_40 *map_40, MACHINE_CONF *conf, char *target_name);
+unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_SEG *map_40, MACHINE_CONF *conf, char *target_name);
+
+
+//------------------------------------------------------------------------------
+// Génération basic pour le mode 160x200 16 couleurs
+//------------------------------------------------------------------------------
+void save_bm16_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, char *target_name);
+
 
 
 //------------------------------------------------------------------------------
 // Initialisation et destruction structure
 //------------------------------------------------------------------------------
-void init_map_40(MAP_40 *map_40);
-void free_map_40(MAP_40 *map_40);
+void init_map_seg(MAP_SEG *map_seg);
+void free_map_seg(MAP_SEG *map_seg);
 
 
 //------------------------------------------------------------------------------
 // Sauvegarde au format thomson 40 cols
 // Les map sont générés par la fonction thomson_post_trt_combin
 //------------------------------------------------------------------------------
-void save_map_40_col(char *filename, MAP_40 *map_40, PALETTE *palette);
+void save_map_40_col(char *filename, MAP_SEG *map_40, PALETTE *palette);
 
+
+//------------------------------------------------------------------------------
+// Sauvegarde au format thomson 16 couleurs 160x200
+//------------------------------------------------------------------------------
+void save_map_16(char *filename, MAP_SEG *map_16, PALETTE *palette, int x_count);
 
 #endif

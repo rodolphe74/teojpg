@@ -220,15 +220,91 @@ void draw_pixels_x_1(unsigned char *pixels, int width, int height, PALETTE *pale
 
 
 
-void redraw(int *pixels_plus, int *next_pixels)
+void draw_pixels_BM16(unsigned char *pixels, int width, int height, PALETTE *palette)
+{
+	SDL_Color colors[255];
+	int r, g, b;
+
+	for (int i = 0; i < palette->size; i++) {
+		colors[i].r = palette->colors[i][0];
+		colors[i].g = palette->colors[i][1];
+		colors[i].b = palette->colors[i][2];
+		colors[i].a = 255;
+	}
+
+	SDL_SetPaletteColors(surface->format->palette, colors, 0, palette->size);
+
+	unsigned char *sdl_pixels = surface->pixels;
+
+	for (int y = 0; y < h; y++)
+		for (int x = 0; x < w; x++)
+			sdl_pixels[x + y * w] = 0;
+
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			sdl_pixels[(x * 4) + (y * 2 * w)] = pixels[x + y * width];
+			sdl_pixels[(x * 4 + 1) + (y * 2 * w)] = pixels[x + y * width];
+			sdl_pixels[(x * 4 + 2) + (y * 2 * w)] = pixels[x + y * width];
+			sdl_pixels[(x * 4 + 3) + (y * 2 * w)] = pixels[x + y * width];
+			sdl_pixels[(x * 4) + ((y * 2 + 1) * w)] = pixels[x + y * width];
+			sdl_pixels[(x * 4 + 1) + ((y * 2 + 1) * w)] = pixels[x + y * width];
+			sdl_pixels[(x * 4 + 2) + ((y * 2 + 1) * w)] = pixels[x + y * width];
+			sdl_pixels[(x * 4 + 3) + ((y * 2 + 1) * w)] = pixels[x + y * width];
+		}
+	}
+
+	int step = w / palette->size;
+
+	for (int i = 0; i < palette->size; i++)
+		draw_box(i * step, 500, step, 12, i);
+}
+
+
+void draw_pixels_BM16_x_1(unsigned char *pixels, int width, int height, PALETTE *palette)
+{
+	SDL_Color colors[255];
+	int r, g, b;
+
+	for (int i = 0; i < palette->size; i++) {
+		colors[i].r = palette->colors[i][0];
+		colors[i].g = palette->colors[i][1];
+		colors[i].b = palette->colors[i][2];
+		colors[i].a = 255;
+	}
+
+	SDL_SetPaletteColors(surface->format->palette, colors, 0, palette->size);
+
+	unsigned char *sdl_pixels = surface->pixels;
+
+	for (int y = 0; y < h; y++)
+		for (int x = 0; x < w; x++)
+			sdl_pixels[x + y * w] = 0;
+
+	printf("width:%d\n", width);
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			sdl_pixels[(x * 2) + (y * w)] = pixels[x + y * width];
+			sdl_pixels[(x * 2 + 1) + (y * w)] = pixels[x + y * width];
+		}
+	}
+
+	int step = w / palette->size;
+
+	for (int i = 0; i < palette->size; i++)
+		draw_box(i * step, 500, step, 12, i);
+}
+
+
+
+void redraw_BM40(int *pixels_plus, int *clash_mode)
 {
 	if (*pixels_plus) {
-		if (*next_pixels == 1)
+		if (*clash_mode == 1)
 			draw_pixels(thomson_pixels, the_image->width, the_image->height, &the_palette);
 		else
 			draw_pixels(pixels, the_image->width, the_image->height, &the_palette);
 	} else {
-		if (*next_pixels == 1)
+		if (*clash_mode == 1)
 			draw_pixels_x_1(thomson_pixels, the_image->width, the_image->height, &the_palette);
 		else
 			draw_pixels_x_1(pixels, the_image->width, the_image->height, &the_palette);
@@ -236,9 +312,18 @@ void redraw(int *pixels_plus, int *next_pixels)
 }
 
 
-int message_loop()
+void redraw_BM16(int *pixels_plus)
 {
-	int next_pixels = 0;
+	if (*pixels_plus == 1)
+		draw_pixels_BM16(pixels, the_image->width, the_image->height, &the_palette);
+	else
+		draw_pixels_BM16_x_1(pixels, the_image->width, the_image->height, &the_palette);
+}
+
+
+int message_loop(char *bm_mode)
+{
+	int clash_mode = 0;
 	int exit = 0;
 	int pixels_plus = 1;
 
@@ -249,31 +334,53 @@ int message_loop()
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) exit = 1;
 
-			switch (event.type) {
-			case SDL_KEYUP:
-				if (event.key.keysym.sym == SDLK_SPACE) {
-					if (next_pixels == 1)
-						next_pixels = 0;
-					else
-						next_pixels = 1;
-					redraw(&pixels_plus, &next_pixels);
-				}
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-					exit = 1;
+			if (strcmp(bm_mode, "BM40") == 0) {
+				switch (event.type) {
+				case SDL_KEYUP:
+					if (event.key.keysym.sym == SDLK_SPACE) {
+						if (clash_mode == 1)
+							clash_mode = 0;
+						else
+							clash_mode = 1;
+						redraw_BM40(&pixels_plus, &clash_mode);
+					}
+					if (event.key.keysym.sym == SDLK_ESCAPE)
+						exit = 1;
 
-				if (event.key.keysym.sym == SDLK_KP_PLUS) {
-					pixels_plus = 1;
-					redraw(&pixels_plus, &next_pixels);
-				}
+					if (event.key.keysym.sym == SDLK_KP_PLUS) {
+						pixels_plus = 1;
+						redraw_BM40(&pixels_plus, &clash_mode);
+					}
 
-				if (event.key.keysym.sym == SDLK_KP_MINUS) {
-					pixels_plus = 0;
-					redraw(&pixels_plus, &next_pixels);
-				}
+					if (event.key.keysym.sym == SDLK_KP_MINUS) {
+						pixels_plus = 0;
+						redraw_BM40(&pixels_plus, &clash_mode);
+					}
 
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
+				}
+			} else if (strcmp(bm_mode, "BM16") == 0) {
+				switch (event.type) {
+				case SDL_KEYUP:
+					if (event.key.keysym.sym == SDLK_ESCAPE)
+						exit = 1;
+
+					if (event.key.keysym.sym == SDLK_KP_PLUS) {
+						pixels_plus = 1;
+						redraw_BM16(&pixels_plus);
+					}
+
+					if (event.key.keysym.sym == SDLK_KP_MINUS) {
+						pixels_plus = 0;
+						redraw_BM16(&pixels_plus);
+					}
+
+					break;
+				default:
+					break;
+				}
 			}
 		}
 
@@ -296,7 +403,6 @@ int main(int argc, char *argv[])
 	float *the_matrix;
 	int the_matrix_size[2];
 	int matrix_size = 0;
-	int floyd = 0;
 	float gammaf = 1.0f;
 	float brightnessf = 0.0f;
 	float contrastf = 1.0f;
@@ -313,6 +419,7 @@ int main(int argc, char *argv[])
 	int arg_matrix = 0;
 	int arg_floyd = 0;
 	enum DITHER { MATRIX, FLOYD, OSTRO };
+
 	int dither_mode;
 	float arg_gamma = 0.f;
 	float arg_contrast = 0.f;
@@ -322,6 +429,8 @@ int main(int argc, char *argv[])
 	int arg_median_cut = 0;
 	int arg_wu = 0;
 	int arg_ostro = 0;
+	const char *arg_mode = NULL;
+	char the_mode[10];
 
 	struct argparse_option arg_options[] = {
 		OPT_HELP(),
@@ -338,6 +447,7 @@ int main(int argc, char *argv[])
 		OPT_BOOLEAN('o',	   "octree",	    &arg_octree,     "Quantification Octree",					 NULL, 0, 0),
 		OPT_BOOLEAN('c',	   "median",	    &arg_median_cut, "Quantification median-cut",				 NULL, 0, 0),
 		OPT_STRING('z',		   "machine",	    &arg_machine,    "Génération pour thomson [TO7, TO770, MO5, MO6, TO8, TO9]", NULL, 0, 0),
+		OPT_STRING('d',		   "mode",	    &arg_mode,	     "Mode graphique [BM40, BM16, BM4, BM80]",			 NULL, 0, 0),
 		OPT_END(),
 	};
 
@@ -347,21 +457,51 @@ int main(int argc, char *argv[])
 	argparse_describe(&argparse, "\nA brief description of what the program does and how it works.", "\nAdditional description of the program after the description of the arguments.");
 	argc = argparse_parse(&argparse, argc, (const char **)argv);
 
-	// if (arg_matrix) {
-	// 	matrix_size = arg_matrix;
-	// 	printf("Dithering ordonne %d\n", matrix_size);
-	// 	floyd = 0;
-	// }
 
-	// if (arg_floyd > 0 && arg_floyd <= 10) {
-	// 	printf("Dithering Floyd Steinberg - utilisation de la matrice %s\n", floyd_matrix[arg_floyd - 1].name);
-	// 	floyd = 1;
-	// 	matrix_size = 0;
-	// } else if (arg_floyd > 10) {
-	// 	printf("Dithering Floyd Steinberg - utilisation de la matrice standard\n", arg_floyd);
-	// 	floyd = 1;
-	// 	matrix_size = 0;
-	// }
+	if (arg_machine && strcmp(arg_machine, "TO7") == 0) {
+		the_conf = &TO7_CONF;
+		printf("REM Configuration TO7\n");
+	} else if (arg_machine && strcmp(arg_machine, "TO770") == 0) {
+		the_conf = &TO7_70_CONF;
+		printf("Configuration TO7 70\n");
+	} else if (arg_machine && strcmp(arg_machine, "MO5") == 0) {
+		the_conf = &MO5_CONF;
+		printf("Configuration MO5\n");
+	} else if (arg_machine && strcmp(arg_machine, "MO6") == 0) {
+		the_conf = &MO6_CONF;
+		printf("Configuration MO6\n");
+	} else if (arg_machine && strcmp(arg_machine, "TO8") == 0) {
+		the_conf = &TO8_CONF;
+		printf("Configuration TO8\n");
+	} else if (arg_machine && strcmp(arg_machine, "TO9") == 0) {
+		the_conf = &TO9_CONF;
+		printf("Configuration TO9\n");
+	} else {
+		// defaut -> TO9
+		the_conf = &TO9_CONF;
+		printf("Configuration non reconnue -> TO9 par defaut\n");
+	}
+
+
+
+
+	if (arg_mode) {
+		// Il faut vérifier que le mode est compatible avec la machine
+
+		int *modes = the_conf->modes;
+		int can_do_mode = 0;
+		for (int i = 0; i < 5; i++)
+			if (strcmp(BM_MODE_STRING[the_conf->modes[i]], arg_mode) == 0)
+				can_do_mode = 1;
+		if (!can_do_mode) {
+			printf("La machine sélectionnée ne peut produire ce mode graphique");
+			return 0;
+		}
+		strcpy(the_mode, arg_mode);
+		printf("Mode graphique sélectionné %s\n", the_mode);
+	}
+
+
 
 
 	if (arg_matrix) {
@@ -399,7 +539,11 @@ int main(int argc, char *argv[])
 	int do_resize = 0;
 
 
-	if (the_image->width > 320) {
+	if (strcmp(the_mode, "BM16") != 0 && the_image->width >= 320) {
+		ratio_x = the_image->width / 320.0;
+		printf("ratio x %f\n", ratio_x);
+		do_resize = 1;
+	} else if (strcmp(the_mode, "BM16") == 0 && the_image->width >= 160) {
 		ratio_x = the_image->width / 320.0;
 		printf("ratio x %f\n", ratio_x);
 		do_resize = 1;
@@ -410,17 +554,27 @@ int main(int argc, char *argv[])
 		do_resize = 1;
 	}
 
-
 	if (do_resize) {
 		ratio = MAX(ratio_x, ratio_y);
 		printf("Redimensionnement ratio %f\n", ratio);
-		IMAGE *new_image = bilinear_resize(the_image,
-						   (int)the_image->width / ratio,
-						   (int)the_image->height / ratio);
+
+		IMAGE *new_image = NULL;
+		if (strcmp(the_mode, "BM16") != 0) {
+			new_image = bilinear_resize(the_image,
+						    (int)the_image->width / ratio,
+						    (int)the_image->height / ratio);
+		} else {
+			new_image = bilinear_resize(the_image,
+						    (int)the_image->width / (ratio * 2), // pixels doubles
+						    (int)the_image->height / ratio);
+		}
+
+
 		free_image(the_image);
 		the_image = new_image;
 		printf("Nouvelle dimensions %d %d\n", the_image->width, the_image->height);
 	}
+
 
 	int thomson_width = (the_image->width / 8) * 8;
 
@@ -465,32 +619,6 @@ int main(int argc, char *argv[])
 
 
 	init_thomson_linear_levels();
-
-	if (arg_machine && strcmp(arg_machine, "TO7") == 0) {
-		the_conf = &TO7_CONF;
-		printf("REM Configuration TO7\n");
-	} else if (arg_machine && strcmp(arg_machine, "TO770") == 0) {
-		the_conf = &TO7_70_CONF;
-		printf("Configuration TO7 70\n");
-	} else if (arg_machine && strcmp(arg_machine, "MO5") == 0) {
-		the_conf = &MO5_CONF;
-		printf("Configuration MO5\n");
-	} else if (arg_machine && strcmp(arg_machine, "MO6") == 0) {
-		the_conf = &MO6_CONF;
-		printf("Configuration MO6\n");
-	} else if (arg_machine && strcmp(arg_machine, "TO8") == 0) {
-		the_conf = &TO8_CONF;
-		printf("Configuration TO8\n");
-	} else if (arg_machine && strcmp(arg_machine, "TO9") == 0) {
-		the_conf = &TO9_CONF;
-		printf("Configuration TO9\n");
-	} else {
-		// defaut -> TO9
-		the_conf = &TO9_CONF;
-		printf("Configuration non reconnue -> TO9 par defaut\n");
-	}
-
-
 
 
 	if (the_conf->has_4096_colors) {
@@ -565,6 +693,11 @@ int main(int argc, char *argv[])
 			the_matrix_size[0] = BAYER_8_8_SIZE[0];
 			the_matrix_size[1] = BAYER_8_8_SIZE[1];
 			get_precalculated_matrix(BAYER_8_8, BAYER_8_8_SIZE, the_matrix);
+		} else if (matrix_size == 7) {
+			the_matrix = malloc(BAYER_15_7[0] * BAYER_15_7[1] * sizeof(float));
+			the_matrix_size[0] = BAYER_15_7_SIZE[0];
+			the_matrix_size[1] = BAYER_15_7_SIZE[1];
+			get_precalculated_matrix(BAYER_15_7, BAYER_15_7_SIZE, the_matrix);
 		}
 
 		IMAGE *ordered_image = ordered_dither_yliluoma(the_image, &the_palette, the_matrix, the_matrix_size);
@@ -593,42 +726,94 @@ int main(int argc, char *argv[])
 
 	pixels = create_pixels_array(the_image, &the_palette);
 
-	MAP_40 map_40;
 
-	init_map_40(&map_40);
+	if (strcmp(the_mode, "BM40") == 0) {
+		// Gestion et affichage du mode BM40
 
-	// Garde 8 car max du nom du fichier
-	char *filename_without_path;
-	char filename_only[256];
+		MAP_SEG map_40;
+		init_map_seg(&map_40);
 
-	filename_without_path = fname(image_filename);
-	if (strlen(filename_without_path) > 8)
-		filename_without_path[8] = 0;
-	replace_point(filename_without_path);
+		// Garde 8 car max du nom du fichier
+		char *filename_without_path;
+		char filename_only[256];
 
-	// Recherche color clash
-	thomson_pixels = thomson_post_trt_combin(the_image, &the_palette, &map_40, the_conf, filename_without_path);
+		filename_without_path = fname(image_filename);
+		if (strlen(filename_without_path) > 8)
+			filename_without_path[8] = 0;
+		replace_point(filename_without_path);
 
-	// Sauvegarde TO-SNAP
-	save_map_40_col(filename_without_path, &map_40, &the_palette);
-	free_map_40(&map_40);
+		// Recherche color clash
+		thomson_pixels = thomson_post_trt_combin(the_image, &the_palette, &map_40, the_conf, filename_without_path);
 
-	// Affichage
-	if (!create_window(0)) {
-		printf("Impossible de creer l'ecran\n");
-		return 0;
+		// Sauvegarde TO-SNAP
+		save_map_40_col(filename_without_path, &map_40, &the_palette);
+		free_map_seg(&map_40);
+
+		// Affichage
+		if (!create_window(0)) {
+			printf("Impossible de creer l'ecran\n");
+			return 0;
+		}
+
+		printf("Affichage du résultat SDL\n");
+		draw_pixels(pixels, the_image->width, the_image->height, &the_palette);
+
+		printf("Espace : toggle color clash ou pas\n");
+		printf("+/- : zoom\n");
+		fflush(stdout);
+
+		SDL_SetWindowTitle(window, "Espace : toggle color clash | +/- : zoom");
+	} else if (strcmp(the_mode, "BM16") == 0) {
+		// Gestion et affichage du mode BM16 (pixels doubles)
+
+		MAP_SEG map_16;
+		init_map_seg(&map_16);
+
+		// Garde 8 car max du nom du fichier
+		char *filename_without_path;
+		char filename_only[256];
+		unsigned char two_pixels;
+
+		filename_without_path = fname(image_filename);
+		if (strlen(filename_without_path) > 8)
+			filename_without_path[8] = 0;
+		replace_point(filename_without_path);
+
+		// Sauvegarde basic
+		save_bm16_basic(the_image, pixels, &the_palette, filename_without_path);
+
+		// Sauvegarde TO-SNAP BM16
+		map_16.lines = the_image->height / 8;
+		map_16.columns = the_image->width / 2;
+		int x_count = 0;
+		for (int x = 0; x < map_16.columns * 2; x += 4) {
+			for (int y = 0; y < map_16.lines * 8; y++) {
+				// RAMA
+				two_pixels = pixels[y * the_image->width + x] << 4 | pixels[y * the_image->width + x + 1];
+				list_add_last(map_16.rama, &two_pixels);
+
+				// RAMB
+				two_pixels = pixels[y * the_image->width + x + 2] << 4 | pixels[y * the_image->width + x + 3];
+				list_add_last(map_16.ramb, &two_pixels);
+			}
+			x_count++;
+		}
+
+		save_map_16(filename_without_path, &map_16, &the_palette, x_count);
+		free_map_seg(&map_16);
+
+		// Affichage
+		if (!create_window(0)) {
+			printf("Impossible de creer l'ecran\n");
+			return 0;
+		}
+		printf("Affichage du résultat SDL\n");
+		draw_pixels_BM16(pixels, the_image->width, the_image->height, &the_palette);
+		fflush(stdout);
+		SDL_SetWindowTitle(window, "+/- : zoom");
 	}
 
-	printf("Affichage du résultat SDL\n");
-	draw_pixels(pixels, the_image->width, the_image->height, &the_palette);
-
-	printf("Espace : toggle color clash ou pas\n");
-	printf("+/- : zoom\n");
-	fflush(stdout);
-
-	SDL_SetWindowTitle(window, "Espace pour passer en mode color clash");
-
-	message_loop();
+	message_loop(the_mode);
 
 	free(pixels);
 	free(thomson_pixels);

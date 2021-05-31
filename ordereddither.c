@@ -9,12 +9,8 @@
 void get_precalculated_matrix(short *matrix, int *matrix_size,
 			      float *pre_calc_matrix)
 {
-	for (int y = 0; y < matrix_size[1]; y++) {
-		for (int x = 0; x < matrix_size[0]; x++) {
-			pre_calc_matrix[y * matrix_size[1] + x] = (matrix[y * matrix_size[1] + x] + 1.0f) / (matrix_size[0] * matrix_size[1]);
-			// log_debug("(%d %d)  >%f ", x, y, pre_calc_matrix[y * matrix_size[1] + x]);
-		}
-	}
+	for (int i = 0; i < matrix_size[1] * matrix_size[0]; i++)
+		pre_calc_matrix[i] = (matrix[i] + 0.0f) / (matrix_size[0] * matrix_size[1]);
 }
 
 
@@ -49,7 +45,7 @@ IMAGE *ordered_dither(IMAGE *source, PALETTE *palette, float *matrix, int *matri
 			PIXEL p = source->pixels[y * source->width + x];
 
 			if (matrix) {
-				map_value = matrix[((y % matrix_size[1]) * matrix_size[1]) + (x % matrix_size[0])];
+				map_value = matrix[((y % matrix_size[1]) * matrix_size[0]) + (x % matrix_size[0])];
 
 				d2.r = p.r + map_value * threshold[0];
 				d2.g = p.g + map_value * threshold[1];
@@ -167,7 +163,8 @@ IMAGE *ordered_dither_yliluoma(IMAGE *source, PALETTE *palette, float *matrix, i
 			PIXEL p = source->pixels[y * source->width + x];
 
 			if (matrix) {
-				map_value = matrix[((y % matrix_size[1]) * matrix_size[1]) + (x % matrix_size[0])];
+				// map_value = matrix[((y % matrix_size[1]) * matrix_size[1]) + (x % matrix_size[0])];
+				map_value = matrix[((y % matrix_size[1]) * matrix_size[0]) + (x % matrix_size[0])];
 
 				sprintf(color_key, "%03d%03d%03d", p.r, p.g, p.b);
 				bk_bool contained = map_get(&plan, processed_mixing_plan, color_key);
