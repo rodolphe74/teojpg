@@ -69,7 +69,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 | Argument       | Description         |
 | :------------- | :----------         |
 |-i              |Nom de l'image jpg                                   |
-|-m              |Taille de la matrice pour le tramage ordonné<br>valeurs possibles: 2, 3, 4, 8<br>Le nombre de tons (et de trames) augmente avec la taille de la matrice         |
+|-m              |Taille de la matrice pour le tramage ordonné<br>valeurs possibles: 2, 3, 4, 7, 8<br>Le nombre de tons (et de trames) augmente avec la taille de la matrice. La matrice 7 est une matrice 15x7 spécifique au mode 160x200 (pixels rectangulaires) |
 |-f              |Matrice pour le tramage diffusion d'erreurs<br>valeurs possibles: de 1 à 10<br>1-Floyd Steinberg<br>2-Jarvis<br>3-Zhigang<br>4-Shiau<br>5-Shiau 2<br>6-Stucki<br>7-Burkes<br>8-Sierra<br>9-Atkinson<br>10-Knuth|
 |-k              |Tramage selon l'algorithme [Ostromoukhov](https://perso.liris.cnrs.fr/victor.ostromoukhov/publications/pdf/SIGGRAPH01_varcoeffED.pdf)           |
 |-g              |Modification du gamma<br>valeurs : entre 0.1 et 2.0, 1.0 gamma d'origine           |
