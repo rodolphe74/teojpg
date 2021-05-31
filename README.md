@@ -38,7 +38,7 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 
 	Basic options
 		-i, --input=<str>         Nom de l'image
-		-m, --matrix=<int>        Tramage ordonné Matrice [2,3,4,8]
+		-m, --matrix=<int>        Tramage ordonné Matrice [2,3,4,7,8]
 		-f, --floyd=<int>         Tramage Floyd Steinberg [1->10]
 		-k, --ostromoukhov        Tramage adaptif ostromoukof
 		-g, --gamma=<flt>         Correction gamma [0.1->2.0]
