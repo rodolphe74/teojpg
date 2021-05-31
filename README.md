@@ -110,9 +110,9 @@ Sur Linux, installer au préalable le paquet SDL2 de développement et lancer un
 
 # Quelques exemples
 
-| Mode graphique | Contraintes     |Couleurs      | Tramage           | Quantification | Résultat       |
-| :------------- | :----------     | :----------  | :----------    | :----------    | :----------    |
-|      BM40      | 2 coul / 8 pix   |16 / 4096       | Ostromoukhov    | Wu             |![](/samples/nimoy_ostro_to9.png)|
-|      BM40      | 2 coul / 8 pix   |16 (MO5)        | Atkinson        | Octree         |![](/samples/arcadia_atk.png)|
-|      BM16      | -                |16 /4096    | Régulier 15x7       | Octree         |![](/samples/actarus.png)|
-|      BM40      | 2 coul / 8 pix   |16 / 4096       | -               | Wu             |![](/samples/dualail.png)|
+| Mode graphique | Résolution  | Contraintes      |Couleurs      | Tramage           | Quantification | Résultat       |
+| :------------- | :---------  | :----------      | :----------  | :----------    | :----------    | :----------    |
+|      BM40      |             | 2 coul / 8 pix   |16 / 4096       | Ostromoukhov    | Wu             |![](/samples/nimoy_ostro_to9.png)|
+|      BM40      |             | 2 coul / 8 pix   |16 (MO5)        | Atkinson        | Octree         |![](/samples/arcadia_atk.png)|
+|      BM16      |             | -                |16 /4096    | Régulier 15x7       | Octree         |![](/samples/actarus.png)|
+|      BM40      |             | 2 coul / 8 pix   |16 / 4096       | -               | Wu             |![](/samples/dualail.png)|
