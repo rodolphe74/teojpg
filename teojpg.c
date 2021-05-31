@@ -436,7 +436,7 @@ int main(int argc, char *argv[])
 		OPT_HELP(),
 		OPT_GROUP("Basic options"),
 		OPT_STRING('i',		   "input",	    &arg_input,	     "Nom de l'image",						 NULL, 0, 0),
-		OPT_INTEGER('m',	   "matrix",	    &arg_matrix,     "Tramage ordonné Matrice [2,3,4,8]",			 NULL, 0, 0),
+		OPT_INTEGER('m',	   "matrix",	    &arg_matrix,     "Tramage ordonné Matrice [2,3,4,7,8]",			 NULL, 0, 0),
 		OPT_INTEGER('f',	   "floyd",	    &arg_floyd,	     "Tramage Floyd Steinberg [1->10]",				 NULL, 0, 0),
 		OPT_BOOLEAN('k',	   "ostromoukhov",  &arg_ostro,	     "Tramage adaptif ostromoukof",				 NULL, 0, 0),
 		OPT_FLOAT('g',		   "gamma",	    &arg_gamma,	     "Correction gamma [0.1->2.0]",				 NULL, 0, 0),
