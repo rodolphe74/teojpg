@@ -166,6 +166,8 @@ IMAGE *ordered_dither_yliluoma(IMAGE *source, PALETTE *palette, float *matrix, i
 				// map_value = matrix[((y % matrix_size[1]) * matrix_size[1]) + (x % matrix_size[0])];
 				map_value = matrix[((y % matrix_size[1]) * matrix_size[0]) + (x % matrix_size[0])];
 
+				// printf("%d %d - %d\n", x, y, ((y % matrix_size[1]) * matrix_size[0]) + (x % matrix_size[0]));
+
 				sprintf(color_key, "%03d%03d%03d", p.r, p.g, p.b);
 				bk_bool contained = map_get(&plan, processed_mixing_plan, color_key);
 				if (!contained) {
@@ -193,6 +195,7 @@ IMAGE *ordered_dither_yliluoma(IMAGE *source, PALETTE *palette, float *matrix, i
 				d.g = p.g;
 				d.b = p.b;
 			}
+
 
 			// Le rapprochement avec la palette est fait à la conversion IMAGE->*pixel
 			// cf create_pixels_array

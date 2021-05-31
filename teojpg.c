@@ -499,9 +499,10 @@ int main(int argc, char *argv[])
 		}
 		strcpy(the_mode, arg_mode);
 		printf("Mode graphique sélectionné %s\n", the_mode);
+	} else {
+		printf("Mode graphique par défaut BM40\n");
+		strcpy(the_mode, "BM40");	// mode par défaut
 	}
-
-
 
 
 	if (arg_matrix) {
@@ -518,7 +519,6 @@ int main(int argc, char *argv[])
 	} else if (arg_ostro) {
 		dither_mode = OSTRO;
 	}
-
 
 
 	if (arg_input != NULL) {
@@ -717,6 +717,9 @@ int main(int argc, char *argv[])
 		the_image = fs_image;
 	}
 
+
+	
+
 	// passage en RGB pour l'affichage
 	IMAGE *rgb_image = convert_linear_image_to_rgb(the_image);
 
@@ -781,6 +784,7 @@ int main(int argc, char *argv[])
 
 		// Sauvegarde basic
 		save_bm16_basic(the_image, pixels, &the_palette, filename_without_path);
+
 
 		// Sauvegarde TO-SNAP BM16
 		map_16.lines = the_image->height / 8;

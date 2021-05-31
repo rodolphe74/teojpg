@@ -809,7 +809,7 @@ void save_bm16_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, cha
 {
 	unsigned short four_pixels;
 	char data_values[256];
-	char str_value[10];
+	char str_value[32];
 	int line_count = 1000;
 	int r, g, b;
 
@@ -828,7 +828,6 @@ void save_bm16_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, cha
 		b = palette->colors[i][2];
 		fprintf(basic_out, "%d PALETTE %d,%d\n", i + 3, i, get_palette_thomson_value(r, g, b));
 	}
-
 
 	fprintf(basic_out, "21 FOR Y=1 TO L\n");
 	fprintf(basic_out, "22 E=0\n");
@@ -854,10 +853,13 @@ void save_bm16_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, cha
 	fprintf(basic_out, "224 C4=B2-(C3*16)\n");
 	fprintf(basic_out, "230 RETURN\n");
 
+
+
 	for (int y = 0; y < source->height; y++) {
 		memset(data_values, 0, 256);
 		sprintf(str_value, "%d DATA ", line_count);
 		strcat(data_values, str_value);
+
 		for (int x = 0; x < source->width - 1; x += 4) {
 			// pas de 4 pixels -> 4*4 = 16 bits -> 2 octets
 			four_pixels = pixels[y * source->width + x] << 12
