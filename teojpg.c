@@ -381,6 +381,26 @@ int message_loop(char *bm_mode)
 				default:
 					break;
 				}
+			} else if (strcmp(bm_mode, "BM4") == 0) {
+				switch (event.type) {
+				case SDL_KEYUP:
+					if (event.key.keysym.sym == SDLK_ESCAPE)
+						exit = 1;
+
+					if (event.key.keysym.sym == SDLK_KP_PLUS) {
+						pixels_plus = 1;
+						redraw_BM40(&pixels_plus, &clash_mode);
+					}
+
+					if (event.key.keysym.sym == SDLK_KP_MINUS) {
+						pixels_plus = 0;
+						redraw_BM40(&pixels_plus, &clash_mode);
+					}
+
+					break;
+				default:
+					break;
+				}
 			}
 		}
 
@@ -622,16 +642,24 @@ int main(int argc, char *argv[])
 
 
 	if (the_conf->has_4096_colors) {
+
+		int color_max = 16;
+		if (strcmp(the_mode, "BM4") == 0) {
+			printf("Reduction à 4 couleurs\n");
+			color_max = 4;
+			iter_median_cut = 2;
+		}
+
 		// Dans ce cas, il faut chercher une palette
 		if (arg_median_cut) {
 			printf("Reduction de palette median-cut\n");
 			guess_palette_median_cut(the_image, &the_palette, iter_median_cut);
 		} else if (arg_octree) {
 			printf("Reduction de palette octree\n");
-			guess_palette_octree(the_image, &the_palette, 16);
+			guess_palette_octree(the_image, &the_palette, /*16*/ color_max);
 		} else {
 			printf("Reduction de palette wu\n");
-			guess_palette_wu(the_image, &the_palette, 16);
+			guess_palette_wu(the_image, &the_palette, /*16*/ color_max);
 		}
 		thomson_post_trt_palette(&the_palette, &the_palette);
 	} else {
@@ -729,8 +757,22 @@ int main(int argc, char *argv[])
 
 	pixels = create_pixels_array(the_image, &the_palette);
 
+	if (strcmp(the_mode, "BM4") == 0) {
+		// Affichage
+		if (!create_window(0)) {
+			printf("Impossible de creer l'ecran\n");
+			return 0;
+		}
 
-	if (strcmp(the_mode, "BM40") == 0) {
+		printf("Affichage du résultat SDL\n");
+		draw_pixels(pixels, the_image->width, the_image->height, &the_palette);
+
+		printf("Espace : toggle color clash ou pas\n");
+		printf("+/- : zoom\n");
+		fflush(stdout);
+
+		SDL_SetWindowTitle(window, "+/- : zoom");
+	} else if (strcmp(the_mode, "BM40") == 0) {
 		// Gestion et affichage du mode BM40
 
 		MAP_SEG map_40;
