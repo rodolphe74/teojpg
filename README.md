@@ -106,7 +106,7 @@ Sur Linux, installer au préalable le paquet SDL2 de développement et lancer un
 - [Tramage adaptif Ostromoukhov](https://perso.liris.cnrs.fr/victor.ostromoukhov/publications/pdf/SIGGRAPH01_varcoeffED.pdf)
 - [Tramage ordonné Yliluoma](https://bisqwit.iki.fi/story/howto/dither/jy/)
 - [Quantification Wu (fast optimal color quantizer)](https://www.ece.mcmaster.ca/~xwu/)
-- [Les palette du site lospec.com](https://lospec.com/palette-list)
+- [Les palettes du site lospec.com](https://lospec.com/palette-list)
 - [Containers API](https://github.com/bkthomps/Containers)
 - [libjpeg](https://sourceforge.net/projects/libjpeg/files/libjpeg/6b/)
 - [argparse](https://github.com/cofyc/argparse)
