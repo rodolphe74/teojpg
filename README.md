@@ -84,6 +84,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 # Prochaines versions
 - ~~Essayer d'ajouter la diffusion d'erreur OSTROMOUKHOV~~
 - Gérer les autres modes graphiques Thomson TO8/TO9(+)/MO6, 320x200 4 couleurs et ~~160x200 16 couleurs~~ sans contraintes.
+- Utilisation d'une palette prédéfinie (parce que les algos de quantifications ne sont pas toujours optimaux)
 - ~~Makefile Linux/BSD~~
 - Nettoyage de code
 
