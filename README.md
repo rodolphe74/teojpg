@@ -37,7 +37,8 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 		-h, --help                show this help message and exit
 
 	Basic options
-		-i, --input=<str>         Nom de l'image
+		-i, --input=<str>         Fichier image jpg
+		-p, --palette=<str>       Fichier palette format hex
 		-m, --matrix=<int>        Tramage ordonné Matrice [2,3,4,7,8]
 		-f, --floyd=<int>         Tramage Floyd Steinberg [1->10]
 		-k, --ostromoukhov        Tramage adaptif ostromoukof
@@ -83,8 +84,8 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 
 # Prochaines versions
 - ~~Essayer d'ajouter la diffusion d'erreur OSTROMOUKHOV~~
-- Gérer les autres modes graphiques Thomson TO8/TO9(+)/MO6, 320x200 4 couleurs et ~~160x200 16 couleurs~~ sans contraintes.
-- Utilisation d'une palette prédéfinie (parce que les algos de quantifications ne sont pas toujours optimaux) au format [lospec.com](https://lospec.com/palette-list) hex.
+- Gérer les autres modes graphiques Thomson TO8/TO9(+)/MO6, ~~320x200 4 couleurs~~ et ~~160x200 16 couleurs~~ sans contraintes.
+- ~~Utilisation d'une palette prédéfinie (parce que les algos de quantifications ne sont pas toujours optimaux) au format [lospec.com](https://lospec.com/palette-list) hex~~.
 - ~~Makefile Linux/BSD~~
 - Nettoyage de code
 
@@ -104,6 +105,7 @@ Sur Linux, installer au préalable le paquet SDL2 de développement et lancer un
 - [Tramage adaptif Ostromoukhov](https://perso.liris.cnrs.fr/victor.ostromoukhov/publications/pdf/SIGGRAPH01_varcoeffED.pdf)
 - [Tramage ordonné Yliluoma](https://bisqwit.iki.fi/story/howto/dither/jy/)
 - [Quantification Wu (fast optimal color quantizer)](https://www.ece.mcmaster.ca/~xwu/)
+- [Les palette du site lospec.com](https://lospec.com/palette-list)
 - [Containers API](https://github.com/bkthomps/Containers)
 - [libjpeg](https://sourceforge.net/projects/libjpeg/files/libjpeg/6b/)
 - [argparse](https://github.com/cofyc/argparse)
