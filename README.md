@@ -113,10 +113,10 @@ Sur Linux, installer au préalable le paquet SDL2 de développement et lancer un
 
 # Quelques exemples
 
-| Mode graphique | Résolution  | Contraintes      |Couleurs      | Tramage           | Quantification | Résultat       |
+| Mode graphique | Résolution  | Contraintes      |Couleurs      | Tramage           | Quantification/Palette | Résultat       |
 | :------------- | :---------  | :----------      | :----------  | :----------    | :----------    | :----------    |
 |      BM40      |   320x200   | 2 coul/8 pix   |16/4096       | Ostromoukhov    | Wu             |![](/samples/nimoy_ostro_to9.png)|
 |      BM40      |   320x200   | 2 coul/8 pix   |16 (MO5)        | Atkinson        | Octree         |![](/samples/arcadia_atk.png)|
 |      BM16      |   160x200   | -                |16/4096    | Régulier 15x7       | Octree         |![](/samples/actarus.png)|
 |      BM40      |   320x200   | 2 coul/8 pix   |16/4096       | -               | Wu             |![](/samples/dualail.png)|
-|      BM4       |   320x200   | -              |4/4096        | Régulier 8x8    | -<br>Palette kadabura4 |![](/samples/bm320.png)|
+|      BM4       |   320x200   | -              |4/4096        | Régulier 8x8    | Palette kadabura4 |![](/samples/bm320.png)|
