@@ -129,7 +129,7 @@ int get_index_color_thomson_mo(int back_index, int fore_index)
 }
 
 
-void dec_to_binary(int n, char *binaryNum)
+void _dec_to_binary(int n, char *binaryNum)
 {
 	int i = 0;
 
@@ -138,6 +138,32 @@ void dec_to_binary(int n, char *binaryNum)
 		n = n / 2;
 		i++;
 	}
+}
+
+
+void dec_to_binary(int n, char *binaryNum)
+{
+	int i = 0;
+	char buf[32] = { 0 }, reverse_buf[32] = { 0 };
+
+	while (n > 0) {
+		buf[i] = (n % 2 == 0 ? '0' : '1');
+		n = n / 2;
+		i++;
+	}
+
+	//printf("buf %s -> %d\n", buf, i);
+
+	int max = i - 1;
+	int k = 0;
+
+	for (int j = max; j >= 0; j--) {
+		// printf("+");
+		reverse_buf[k] = buf[j];
+		k++;
+	}
+	// printf("%d -> reverse buf '%s'\n",n, reverse_buf);
+	strcpy(binaryNum, reverse_buf);
 }
 
 
@@ -459,8 +485,10 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_SEG 
 
 						for (int k = 0; k < 256; k++) {
 							// itoa(k, binary_string, 2);
+							memset(binary_string, 0, 9);
 							dec_to_binary(k, binary_string);
 							sprintf(byte, "%*.*s%s", 8 - strlen(binary_string), 8 - strlen(binary_string), "00000000", binary_string);
+							// printf("%d  -> %s\n", k, byte);
 
 							for (int l = 0; l < 8; l++)
 								cmp_bloc[l] = (byte[l] == '0' ? index_color_1 : index_color_2);
@@ -655,6 +683,222 @@ void transpose_data_map_40(int columns, int lines, list *src, list *target)
 	}
 }
 
+
+void save_map_4(char *filename, MAP_SEG *map_40, PALETTE *palette)
+{
+	FILE *fout;
+	unsigned char current;
+	int r, g, b;
+	list target_buffer_list = list_init(sizeof(unsigned char));
+	list buffer_list = list_init(sizeof(unsigned char));
+
+	char map_filename[256];
+
+	sprintf(map_filename, "%s.map", filename);
+	if ((fout = fopen(map_filename, "wb")) == NULL) {
+		fprintf(stderr, "Impossible d'ouvrir le fichier données en écriture\n");
+		return;
+	}
+
+
+	transpose_data_map_40(map_40->columns, map_40->lines * 8, &map_40->rama, &buffer_list);
+	// compress(&target_buffer_list, fout, &map_40->rama, 1);
+	compress(&target_buffer_list, fout, &buffer_list, 1);
+
+	list_clear(buffer_list);
+
+	transpose_data_map_40(map_40->columns, map_40->lines * 8, &map_40->ramb, &buffer_list);
+	// compress(&target_buffer_list, fout, &map_40->ramb, 1);
+	compress(&target_buffer_list, fout, &buffer_list, 1);
+
+
+	// Ecriture de l'entete
+	// unsigned short size = (unsigned short) list_size(target_buffer_list) + 3;
+	// unsigned short size = (unsigned short)list_size(target_buffer_list) + 3 + 40;
+	unsigned short size = (unsigned short)list_size(target_buffer_list) + 3 + 39;
+
+	if (size % 2 == 1) {
+		// Apparement, la taille doit être paire
+		unsigned char zero = 0;
+		list_add_last(target_buffer_list, &zero);
+		size++;
+	}
+
+
+	unsigned char header[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	header[2] = size & 255;
+	header[1] = (size >> 8) & 255;
+	header[5] = 0x00;               // BM4
+	header[6] = map_40->columns - 1;
+	header[7] = map_40->lines - 1;  // Le fichier map ne fonctionne que sur multiple de 8
+
+	fwrite(header, sizeof(unsigned char), 8, fout);
+
+	// Ecriture du buffer map compressé dans le fichier de sortie
+	for (int i = 0; i < list_size(target_buffer_list); i++) {
+		list_get_at(&current, target_buffer_list, i);
+		fwrite(&current, sizeof(unsigned char), 1, fout);
+	}
+
+	// Ecriture footer TO-SNAP
+	unsigned char to_snap[40] = { 0 };
+
+	memset(to_snap, 0, 39);
+	to_snap[0] = 0; // 4 couleurs 40 colonnes
+	to_snap[2] = 0; // tour de l'écran
+	to_snap[4] = 2; // mode 2 console
+	for (int i = 0; i < 4; i++) {
+		r = palette->colors[i][0];
+		g = palette->colors[i][1];
+		b = palette->colors[i][2];
+		short thomson_palette_value = get_palette_thomson_value(r, g, b);
+		to_snap[5 + i * 2] = (thomson_palette_value >> 8) & 255;
+		to_snap[5 + i * 2 + 1] = thomson_palette_value & 255;
+	}
+
+	// Complete avec du noir et blanc sinon on y voit que dal
+	for (int i = 4; i < 16; i++) {
+		if (i % 2 == 0) {
+			to_snap[5 + i * 2] = 0;
+			to_snap[5 + i * 2 + 1] = 0;
+		} else {
+			to_snap[5 + i * 2] = (4095 >> 8) & 255;
+			to_snap[5 + i * 2 + 1] = 4095 & 255;
+		}
+	}
+
+
+	to_snap[37] = 0xA5;
+	to_snap[38] = 0x5A;
+	fwrite(to_snap, sizeof(unsigned char), 39, fout);
+
+	// Ecriture du footer
+	unsigned char footer[] = { 0, 0, 0, 0, 0 };
+
+	footer[0] = 255;
+	fwrite(footer, sizeof(unsigned char), 5, fout);
+
+
+	// Ecriture du chargeur TO-SNAP
+	char fname_snap_out[256];
+
+	sprintf(fname_snap_out, "%s.bld", filename);
+	FILE *tosnap_out = fopen(fname_snap_out, "w");
+
+	fprintf(tosnap_out, "10 DIM T%%(10000)\n");
+	fprintf(tosnap_out, "20 DEFFNC(R)=MAX(-R-1,R)\n");
+	fprintf(tosnap_out, "30 LOADP \"%s\",T%%(10000)\n", map_filename);
+	fprintf(tosnap_out, "40 T=T%%(10000)\n");
+	fprintf(tosnap_out, "50 T=T+1 : IF T%%(T)<>-23206 THEN END\n");
+	fprintf(tosnap_out, "60 FOR I=15 TO 0 STEP -1:T=T+1:PALETTE I,FNC(T%%(T)):NEXT\n");
+	fprintf(tosnap_out, "70 T=T+1 : CONSOLE,,,,T%%(T)\n");
+	fprintf(tosnap_out, "80 T=T+1 : SCREEN,,T%%(T)\n");
+	fprintf(tosnap_out, "90 T=T+1 : POKE &H605F,T%%(T)\n");
+	fprintf(tosnap_out, "100 PUT(0,0),T%%(10000)\n");
+	fflush(tosnap_out);
+	fclose(tosnap_out);
+
+
+	fflush(fout);
+	fclose(fout);
+	list_destroy(target_buffer_list);
+	list_destroy(buffer_list);
+
+	printf("Le fichier TO-SNAP est créé\n");
+}
+
+
+
+void save_bm4_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, char *target_name)
+{
+	unsigned short eight_pixels;
+	char data_values[256];
+	char str_value[32];
+	int line_count = 1000;
+	int r, g, b;
+
+	char basic_filename[256];
+
+	sprintf(basic_filename, "%s.bas", target_name);
+
+	// Création basic
+	FILE *basic_out = fopen(basic_filename, "w");
+
+	fprintf(basic_out, "1 CLS:CONSOLE ,,,,2\n");
+	fprintf(basic_out, "2 L=%d:C=%d:E=0\n", source->height, source->width / 8);
+
+	for (int i = 0; i < palette->size; i++) {
+		r = palette->colors[i][0];
+		g = palette->colors[i][1];
+		b = palette->colors[i][2];
+		fprintf(basic_out, "%d PALETTE %d,%d\n", i + 3, i, get_palette_thomson_value(r, g, b));
+	}
+
+	fprintf(basic_out, "21 FOR Y=1 TO L\n");
+	fprintf(basic_out, "22 E=0\n");
+	fprintf(basic_out, "30 FOR X=1 TO C\n");
+	fprintf(basic_out, "31 READ A\n");
+	fprintf(basic_out, "32 GOSUB 200\n");
+	fprintf(basic_out, "33 REM PRINT A,E,B1,B2,\"-\",C1,C2,C3,C4\n");
+	fprintf(basic_out, "34 PSET(E,Y),D1\n");
+	fprintf(basic_out, "35 PSET(E+1,Y),D2\n");
+	fprintf(basic_out, "36 PSET(E+2,Y),D3\n");
+	fprintf(basic_out, "37 PSET(E+3,Y),D4\n");
+	fprintf(basic_out, "38 PSET(E+4,Y),D5\n");
+	fprintf(basic_out, "39 PSET(E+5,Y),D6\n");
+	fprintf(basic_out, "40 PSET(E+6,Y),D7\n");
+	fprintf(basic_out, "41 PSET(E+7,Y),D8\n");
+	fprintf(basic_out, "42 E=E+8\n");
+	fprintf(basic_out, "43 NEXT X\n");
+	fprintf(basic_out, "44 NEXT Y\n");
+	fprintf(basic_out, "46 POKE&H605F,0\n");
+	fprintf(basic_out, "50 END\n");
+	fprintf(basic_out, "200 B=A\n");
+	fprintf(basic_out, "210 B1=INT(B/256)\n");
+	fprintf(basic_out, "220 B2=B-(B1*256)\n");
+	fprintf(basic_out, "221 C1=INT(B1/16)\n");
+	fprintf(basic_out, "222 C2=B1-(C1*16)\n");
+	fprintf(basic_out, "223 C3=INT(B2/16)\n");
+	fprintf(basic_out, "224 C4=B2-(C3*16)\n");
+	fprintf(basic_out, "225 D1=INT(C1/4)\n");
+	fprintf(basic_out, "226 D2=C1-(D1*4)\n");
+	fprintf(basic_out, "227 D3=INT(C2/4)\n");
+	fprintf(basic_out, "228 D4=C2-(D3*4)\n");
+	fprintf(basic_out, "229 D5=INT(C3/4)\n");
+	fprintf(basic_out, "230 D6=C3-(D5*4)\n");
+	fprintf(basic_out, "231 D7=INT(C4/4)\n");
+	fprintf(basic_out, "232 D8=C4-(D7*4)\n");
+	fprintf(basic_out, "250 RETURN\n");
+
+	for (int y = 0; y < source->height; y++) {
+		memset(data_values, 0, 256);
+		sprintf(str_value, "%d DATA ", line_count);
+		strcat(data_values, str_value);
+
+		for (int x = 0; x < source->width - 1; x += 8) {
+			// pas de 8 pixels -> 8 * 2(^2) = 16 bits -> 2 octets
+			eight_pixels = pixels[y * source->width + x] << 14
+				       | pixels[y * source->width + x + 1] << 12
+				       | pixels[y * source->width + x + 2] << 10
+				       | pixels[y * source->width + x + 3] << 8
+				       | pixels[y * source->width + x + 4] << 6
+				       | pixels[y * source->width + x + 5] << 4
+				       | pixels[y * source->width + x + 6] << 2
+				       | pixels[y * source->width + x + 7];
+			sprintf(str_value, "%d,", eight_pixels);
+			strcat(data_values, str_value);
+		}
+		data_values[strlen(data_values) - 1] = 0;
+		strcat(data_values, "\n");
+		fprintf(basic_out, data_values);
+		line_count++;
+	}
+	fflush(basic_out);
+	fclose(basic_out);
+}
+
+
 void save_map_40_col(char *filename, MAP_SEG *map_40, PALETTE *palette)
 {
 	list buffer_list = list_init(sizeof(unsigned char));
@@ -728,27 +972,6 @@ void save_map_40_col(char *filename, MAP_SEG *map_40, PALETTE *palette)
 	}
 
 	// Ecriture footer TO-SNAP
-	/*
-	 * unsigned char to_snap[40];
-	 *
-	 * memset(to_snap, 0, 40);
-	 * to_snap[0] = 0; // 16 couleurs 40 colonnes
-	 * to_snap[2] = 0; // tour de l'écran
-	 * to_snap[4] = 0; // mode 0 console
-	 * for (int i = 0; i < 16; i++) {
-	 *      r = palette->colors[i][0];
-	 *      g = palette->colors[i][1];
-	 *      b = palette->colors[i][2];
-	 *      short thomson_palette_value = get_palette_thomson_value(r, g, b);
-	 *      to_snap[6 + i * 2] = (thomson_palette_value >> 8) & 255;;
-	 *      to_snap[6 + i * 2 + 1] = thomson_palette_value & 255;
-	 * }
-	 * to_snap[38] = 0xA5;
-	 * to_snap[39] = 0x5A;
-	 * fwrite(to_snap, sizeof(unsigned char), 40, fout);
-	 */
-
-	// Ecriture footer TO-SNAP
 	unsigned char to_snap[40];
 
 	memset(to_snap, 0, 39);
@@ -814,6 +1037,7 @@ void save_bm16_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, cha
 	int r, g, b;
 
 	char basic_filename[256];
+
 	sprintf(basic_filename, "%s.bas", target_name);
 
 	// Création basic
@@ -988,6 +1212,27 @@ void save_map_16(char *filename, MAP_SEG *map_16, PALETTE *palette, int x_count)
 
 	fflush(fout);
 	fclose(fout);
+
+
+	// Ecriture du chargeur TO-SNAP
+	char fname_snap_out[256];
+
+	sprintf(fname_snap_out, "%s.bld", filename);
+	FILE *tosnap_out = fopen(fname_snap_out, "w");
+
+	fprintf(tosnap_out, "10 DIM T%%(10000)\n");
+	fprintf(tosnap_out, "20 DEFFNC(R)=MAX(-R-1,R)\n");
+	fprintf(tosnap_out, "30 LOADP \"%s\",T%%(10000)\n", map_filename);
+	fprintf(tosnap_out, "40 T=T%%(10000)\n");
+	fprintf(tosnap_out, "50 T=T+1 : IF T%%(T)<>-23206 THEN END\n");
+	fprintf(tosnap_out, "60 FOR I=15 TO 0 STEP -1:T=T+1:PALETTE I,FNC(T%%(T)):NEXT\n");
+	fprintf(tosnap_out, "70 T=T+1 : CONSOLE,,,,T%%(T)\n");
+	fprintf(tosnap_out, "80 T=T+1 : SCREEN,,T%%(T)\n");
+	fprintf(tosnap_out, "90 T=T+1 : POKE &H605F,T%%(T)\n");
+	fprintf(tosnap_out, "100 PUT(0,0),T%%(10000)\n");
+	fflush(tosnap_out);
+	fclose(tosnap_out);
+
 
 	list_destroy(buffer_list);
 	list_destroy(target_buffer_list);

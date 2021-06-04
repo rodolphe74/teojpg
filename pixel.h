@@ -173,5 +173,10 @@ void _16_to_256_comp(int r_16, int g_16, int b_16, int *r_256, int *g_256, int *
 //------------------------------------------------------------------------------
 void _256_to_16_comp(int r_256, int g_256, int b_256, int *r_16, int *g_16, int *b_16);
 
+//------------------------------------------------------------------------------
+// Chargement d'une palette prédefinie format hex
+// Retourne vrai si ok
+//------------------------------------------------------------------------------
+int load_hex_palette(char *filename, PALETTE *palette);
 
 #endif

@@ -124,6 +124,11 @@ static MACHINE_CONF TO7_CONF = {
 
 
 
+//------------------------------------------------------------------------------
+// Conversion entier binaire
+//------------------------------------------------------------------------------
+void dec_to_binary(int n, char *binaryNum);
+
 
 //------------------------------------------------------------------------------
 // Initialisation des teintes thomson en rvb PC
@@ -161,6 +166,11 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_SEG 
 //------------------------------------------------------------------------------
 void save_bm16_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, char *target_name);
 
+//------------------------------------------------------------------------------
+// Génération basic pour le mode 160x200 16 couleurs
+//------------------------------------------------------------------------------
+void save_bm4_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, char *target_name);
+
 
 
 //------------------------------------------------------------------------------
@@ -175,6 +185,12 @@ void free_map_seg(MAP_SEG *map_seg);
 // Les map sont générés par la fonction thomson_post_trt_combin
 //------------------------------------------------------------------------------
 void save_map_40_col(char *filename, MAP_SEG *map_40, PALETTE *palette);
+
+//------------------------------------------------------------------------------
+// Sauvegarde au format thomson 40 cols
+// Les map sont générés par la fonction thomson_post_trt_combin
+//------------------------------------------------------------------------------
+void save_map_4(char *filename, MAP_SEG *map_40, PALETTE *palette);
 
 
 //------------------------------------------------------------------------------

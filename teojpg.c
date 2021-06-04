@@ -435,6 +435,7 @@ int main(int argc, char *argv[])
 
 	// Lecture des arguments
 	const char *arg_input = NULL;
+	const char *arg_palette = NULL;
 	const char *arg_machine = NULL;
 	int arg_matrix = 0;
 	int arg_floyd = 0;
@@ -455,7 +456,8 @@ int main(int argc, char *argv[])
 	struct argparse_option arg_options[] = {
 		OPT_HELP(),
 		OPT_GROUP("Basic options"),
-		OPT_STRING('i',		   "input",	    &arg_input,	     "Nom de l'image",						 NULL, 0, 0),
+		OPT_STRING('i',		   "input",	    &arg_input,	     "Fichier image jpg",					 NULL, 0, 0),
+		OPT_STRING('p',		   "palette",	    &arg_palette,    "Fichier palette format hex",				 NULL, 0, 0),
 		OPT_INTEGER('m',	   "matrix",	    &arg_matrix,     "Tramage ordonné Matrice [2,3,4,7,8]",			 NULL, 0, 0),
 		OPT_INTEGER('f',	   "floyd",	    &arg_floyd,	     "Tramage Floyd Steinberg [1->10]",				 NULL, 0, 0),
 		OPT_BOOLEAN('k',	   "ostromoukhov",  &arg_ostro,	     "Tramage adaptif ostromoukof",				 NULL, 0, 0),
@@ -521,7 +523,7 @@ int main(int argc, char *argv[])
 		printf("Mode graphique sélectionné %s\n", the_mode);
 	} else {
 		printf("Mode graphique par défaut BM40\n");
-		strcpy(the_mode, "BM40");	// mode par défaut
+		strcpy(the_mode, "BM40");       // mode par défaut
 	}
 
 
@@ -642,26 +644,52 @@ int main(int argc, char *argv[])
 
 
 	if (the_conf->has_4096_colors) {
+		if (arg_palette) {
+			// Dans ce cas fichier palette prédefinie
+			int l = load_hex_palette((char *)arg_palette, &the_palette);
+			if (!l) {
+				printf("Impossible de charger la palette\n");
+				return 0;
+			}
 
-		int color_max = 16;
-		if (strcmp(the_mode, "BM4") == 0) {
-			printf("Reduction à 4 couleurs\n");
-			color_max = 4;
-			iter_median_cut = 2;
-		}
+			printf("Utilisation de la palette palette prédéfinie %s\n", arg_palette);
+			printf("Nombre de couleurs:%d\n", the_palette.size);
 
-		// Dans ce cas, il faut chercher une palette
-		if (arg_median_cut) {
-			printf("Reduction de palette median-cut\n");
-			guess_palette_median_cut(the_image, &the_palette, iter_median_cut);
-		} else if (arg_octree) {
-			printf("Reduction de palette octree\n");
-			guess_palette_octree(the_image, &the_palette, /*16*/ color_max);
+			if (strcmp(the_mode, "BM4") == 0 && the_palette.size > 4) {
+				// Le nombre de couleur est trop élevé
+				printf("Mode BM4 - 4 premières couleurs de la palette effectives\n");
+				the_palette.size = 4;
+			} else if (the_palette.size > 16) {
+				printf("Nombre de couleurs de la palette > 16 - Prise en compte des 16 premières couleurs\n");
+				the_palette.size = 16;
+			}
 		} else {
-			printf("Reduction de palette wu\n");
-			guess_palette_wu(the_image, &the_palette, /*16*/ color_max);
+			// Sinon utilisation d'un algo de quantification
+
+			int color_max = 16;
+			if (strcmp(the_mode, "BM4") == 0) {
+				printf("Reduction à 4 couleurs\n");
+				color_max = 4;
+				iter_median_cut = 2;
+			}
+
+			// Dans ce cas, il faut chercher une palette
+			if (arg_median_cut) {
+				printf("Reduction de palette median-cut\n");
+				guess_palette_median_cut(the_image, &the_palette, iter_median_cut);
+			} else if (arg_octree) {
+				printf("Reduction de palette octree\n");
+				guess_palette_octree(the_image, &the_palette, /*16*/ color_max);
+			} else {
+				printf("Reduction de palette wu\n");
+				guess_palette_wu(the_image, &the_palette, /*16*/ color_max);
+			}
+
+			// post traitemnt sur les couleurs trouvées
+			// augmentation de la luminosité et noir à
+			// la place de la couleur la plus sombre
+			thomson_post_trt_palette(&the_palette, &the_palette);
 		}
-		thomson_post_trt_palette(&the_palette, &the_palette);
 	} else {
 		// Palette fixe de l'ordinateur
 		printf("Palette fixe %d couleurs\n", the_conf->colors_count);
@@ -669,21 +697,6 @@ int main(int argc, char *argv[])
 	}
 
 	fflush(stdout);
-
-
-	/*
-	 * for (int i = 0; i < 16; i++) {
-	 *      if (i%2 == 0) {
-	 *              the_palette.colors[i][0] = 0;
-	 *              the_palette.colors[i][1] = 0;
-	 *              the_palette.colors[i][2] = 0;
-	 *      } else {
-	 *              the_palette.colors[i][0] = 255;
-	 *              the_palette.colors[i][1] = 255;
-	 *              the_palette.colors[i][2] = 255;
-	 *      }
-	 * }
-	 */
 
 
 	// passage en CIE XYZ pour le dithering
@@ -746,7 +759,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	
+
 
 	// passage en RGB pour l'affichage
 	IMAGE *rgb_image = convert_linear_image_to_rgb(the_image);
@@ -758,16 +771,78 @@ int main(int argc, char *argv[])
 	pixels = create_pixels_array(the_image, &the_palette);
 
 	if (strcmp(the_mode, "BM4") == 0) {
+		char binary_string[9] = { 0 };
+		char byte[9] = { 0 };
+		int k;
+		// Sauvegarde TO-SNAP
+		MAP_SEG map_4;
+		init_map_seg(&map_4);
+
+		// Garde 8 car max du nom du fichier
+		char *filename_without_path;
+		char filename_only[256];
+
+		filename_without_path = fname(image_filename);
+		if (strlen(filename_without_path) > 8)
+			filename_without_path[8] = 0;
+		replace_point(filename_without_path);
+
+		// Sauvegarde basic
+		save_bm4_basic(the_image, pixels, &the_palette, filename_without_path);
+
+		map_4.lines = the_image->height / 8;
+		map_4.columns = the_image->width / 8;
+
+		int x_count = 0;
+		int bit_idx = 0;
+		unsigned char the_byte_a = 0, the_byte_b = 0;
+		for (int y = 0; y < map_4.lines * 8; y++) {
+			for (int x = 0; x < map_4.columns * 8; x += 1) {
+				// for (int y = 0; y < map_4.lines * 8; y++) {
+				k = pixels[y * the_image->width + x];
+				if (k == 0) {
+					the_byte_a = the_byte_a | (0 << (7 - bit_idx));
+					the_byte_b = the_byte_b | (0 << (7 - bit_idx));
+				} else if (k == 1) {
+					the_byte_a = the_byte_a | (0 << (7 - bit_idx));
+					the_byte_b = the_byte_b | (1 << (7 - bit_idx));
+				} else if (k == 2) {
+					the_byte_a = the_byte_a | (1 << (7 - bit_idx));
+					the_byte_b = the_byte_b | (0 << (7 - bit_idx));
+				} else {
+					// k = 3
+					the_byte_a = the_byte_a | (1 << (7 - bit_idx));
+					the_byte_b = the_byte_b | (1 << (7 - bit_idx));
+				}
+
+				bit_idx++;
+				if (bit_idx == 8) {
+					bit_idx = 0;
+					list_add_last(map_4.rama, &the_byte_a);
+					list_add_last(map_4.ramb, &the_byte_b);
+					the_byte_a = 0;
+					the_byte_b = 0;
+				}
+			}
+		}
+		int a = list_size(map_4.rama);
+		int b = list_size(map_4.ramb);
+
+		save_map_4(filename_without_path, &map_4, &the_palette);
+
+
 		// Affichage
 		if (!create_window(0)) {
 			printf("Impossible de creer l'ecran\n");
 			return 0;
 		}
 
+
+		free_map_seg(&map_4);
+
 		printf("Affichage du résultat SDL\n");
 		draw_pixels(pixels, the_image->width, the_image->height, &the_palette);
 
-		printf("Espace : toggle color clash ou pas\n");
 		printf("+/- : zoom\n");
 		fflush(stdout);
 

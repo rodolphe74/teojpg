@@ -599,6 +599,31 @@ void load_palette(PALETTE *palette, const int colors[][3], int size)
 }
 
 
+int load_hex_palette(char *filename, PALETTE *palette)
+{
+	char line[256];
+	int count_lines = 0;
+	int r, g, b;
+	FILE *f = fopen(filename, "r");
+
+	if (f == NULL)
+		return 0;
+
+	while (fgets(line, 256, f)) {
+		sscanf(line, "%02X%02X%02X", &r, &g, &b);
+		printf("%d %d %d\n", r, g, b);
+		palette->colors[count_lines][0] = r;
+		palette->colors[count_lines][1] = g;
+		palette->colors[count_lines][2] = b;
+		count_lines++;
+	}
+	palette->size = count_lines;
+
+
+	return 1;
+}
+
+
 void generate_eq_space_palette(PALETTE *palette, int size)
 {
 	HSL hsl;
