@@ -24,7 +24,7 @@ AR2=ranlib
 all: teojpg copy_release
 
 teojpg: 	jpeg.o pixel.o thomson.o ordereddither.o floyddither.o mediancut.o octree.o \
-				wu.o colourconverter.o powf.o log.o win-deps/jpeg-6b/libjpeg.a teojpg.c
+				wu.o kmean.o colourconverter.o powf.o log.o win-deps/jpeg-6b/libjpeg.a teojpg.c
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 jpeg.o: jpeg.c
@@ -49,6 +49,9 @@ octree.o: octree.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 wu.o: wu.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+kmean.o: kmean.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 powf.o: powf.c

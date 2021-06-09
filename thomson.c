@@ -296,7 +296,8 @@ void convert_bloc_to_thomson(unsigned char bloc[8], unsigned char thomson_bloc[3
 
 
 
-void thomson_post_trt_palette(PALETTE *src, PALETTE *target)
+
+void thomson_post_trt_palette_4(PALETTE *src, PALETTE *target)
 {
 	// Les teintes sombres sont modifiées
 	// pour améliorer la correspondance Thomson
@@ -307,6 +308,7 @@ void thomson_post_trt_palette(PALETTE *src, PALETTE *target)
 	d.L = 100;
 	int min = -1;
 
+	// Recherche de la teinte la plus sombre
 	for (int i = 0; i < src->size; i++) {
 		RGBdec c;
 		HSL h;
@@ -315,28 +317,109 @@ void thomson_post_trt_palette(PALETTE *src, PALETTE *target)
 		c.B = src->colors[i][2];
 		dec2hsl(c, &h);
 
-		if (h.L < 50) {
-			if (h.L < d.L) {
+		if (h.L < d.L) {
 				d.H = h.H;
 				d.L = h.L;
 				d.S = h.S;
 				min = i;
 			}
-			h.L = 50;       // boost la lum à 50
-			hsl2dec(h, &c);
-		}
 
-		if (min >= 0) {
+	}
+
+	// Remplacement de la couleur la plus sombre par du noir
+	target->colors[min][0] = 0;
+	target->colors[min][1] = 0;
+	target->colors[min][2] = 0;
+
+	// Boost des couleurs trop sombres
+	for (int i = 0; i < src->size; i++) {
+		RGBdec c;
+		HSL h;
+		c.R = src->colors[i][0];
+		c.G = src->colors[i][1];
+		c.B = src->colors[i][2];
+		dec2hsl(c, &h);
+
+
+		if (i != min) {
+			if (h.L < 50) {
+				h.L = 50;
+			}
+
+			if (h.S < 50) {
+				h.S = 50;
+			}
+
+			hsl2dec(h, &c);
 			target->colors[i][0] = c.R;
 			target->colors[i][1] = c.G;
 			target->colors[i][2] = c.B;
 		}
 	}
 
+}
+
+void thomson_post_trt_palette_16(PALETTE *src, PALETTE *target)
+{
+	// Les teintes sombres sont modifiées
+	// pour améliorer la correspondance Thomson
+	// Ajout du noir pour améliorer les contrastes dans le tramage
+	HSL d;
+	RGBdec r;
+
+	d.L = 100;
+	int min = -1;
+
+	// Recherche de la teinte la plus sombre
+	for (int i = 0; i < src->size; i++) {
+		RGBdec c;
+		HSL h;
+		c.R = src->colors[i][0];
+		c.G = src->colors[i][1];
+		c.B = src->colors[i][2];
+		dec2hsl(c, &h);
+
+		if (h.L < d.L) {
+			d.H = h.H;
+			d.L = h.L;
+			d.S = h.S;
+			min = i;
+		}
+
+	}
+
+	// Remplacement de la couleur la plus sombre par du noir
 	target->colors[min][0] = 0;
 	target->colors[min][1] = 0;
 	target->colors[min][2] = 0;
+
+	// Boost des couleurs trop sombres
+	for (int i = 0; i < src->size; i++) {
+		RGBdec c;
+		HSL h;
+		c.R = src->colors[i][0];
+		c.G = src->colors[i][1];
+		c.B = src->colors[i][2];
+		dec2hsl(c, &h);
+
+		if (i != min) {
+			if (h.L < 50) {
+				h.L = 50;
+			}
+
+			if (h.S < 50) {
+				h.S = 50;
+			}
+
+			hsl2dec(h, &c);
+			target->colors[i][0] = c.R;
+			target->colors[i][1] = c.G;
+			target->colors[i][2] = c.B;
+		}
+	}
+
 }
+
 
 
 
@@ -753,6 +836,10 @@ void save_map_4(char *filename, MAP_SEG *map_40, PALETTE *palette)
 		g = palette->colors[i][1];
 		b = palette->colors[i][2];
 		short thomson_palette_value = get_palette_thomson_value(r, g, b);
+
+		printf("BM4 - Couleur %d %d %d = %d\n", r, g, b, thomson_palette_value);
+		
+
 		to_snap[5 + i * 2] = (thomson_palette_value >> 8) & 255;
 		to_snap[5 + i * 2 + 1] = thomson_palette_value & 255;
 	}
@@ -983,6 +1070,9 @@ void save_map_40_col(char *filename, MAP_SEG *map_40, PALETTE *palette)
 		g = palette->colors[i][1];
 		b = palette->colors[i][2];
 		short thomson_palette_value = get_palette_thomson_value(r, g, b);
+
+		printf("BM40 - Couleur %d %d %d = %d\n", r, g, b, thomson_palette_value);
+
 		to_snap[5 + i * 2] = (thomson_palette_value >> 8) & 255;
 		to_snap[5 + i * 2 + 1] = thomson_palette_value & 255;
 	}
@@ -1196,6 +1286,9 @@ void save_map_16(char *filename, MAP_SEG *map_16, PALETTE *palette, int x_count)
 		g = palette->colors[i][1];
 		b = palette->colors[i][2];
 		short thomson_palette_value = get_palette_thomson_value(r, g, b);
+
+		printf("BM16 - Couleur %d %d %d = %d\n", r, g, b, thomson_palette_value);
+
 		to_snap[5 + i * 2] = (thomson_palette_value >> 8) & 255;
 		to_snap[5 + i * 2 + 1] = thomson_palette_value & 255;
 	}

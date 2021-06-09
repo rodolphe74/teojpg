@@ -611,7 +611,6 @@ int load_hex_palette(char *filename, PALETTE *palette)
 
 	while (fgets(line, 256, f)) {
 		sscanf(line, "%02X%02X%02X", &r, &g, &b);
-		printf("%d %d %d\n", r, g, b);
 		palette->colors[count_lines][0] = r;
 		palette->colors[count_lines][1] = g;
 		palette->colors[count_lines][2] = b;

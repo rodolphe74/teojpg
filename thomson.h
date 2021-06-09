@@ -149,10 +149,18 @@ static int thomson_level_pc[16] = { 0, 100, 127, 142, 163, 179, 191, 203, 215, 2
 extern float thomson_linear_levels[16];
 void init_thomson_linear_levels();
 
+
+
 //------------------------------------------------------------------------------
 // Post traitement palette thomson
 //------------------------------------------------------------------------------
-void thomson_post_trt_palette(PALETTE *src, PALETTE *target);
+void thomson_post_trt_palette_4(PALETTE *src, PALETTE *target);
+
+
+//------------------------------------------------------------------------------
+// Post traitement palette thomson
+//------------------------------------------------------------------------------
+void thomson_post_trt_palette_16(PALETTE *src, PALETTE *target);
 
 //------------------------------------------------------------------------------
 // Traitement thomson 320x200 16 couleurs (couleur unique sur bloc 8 pixels)

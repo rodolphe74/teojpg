@@ -46,6 +46,7 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 		-b, --brightness=<flt>    Luminosité [-128->+128]
 		-t, --contrast=<flt>      Contraste [0.1->2.0]
 		-s, --saturation=<flt>    Saturation [0.1->2.0]
+		-e, --kmean               Quantification K-mean
 		-w, --wu                  Quantification Wu
 		-o, --octree              Quantification Octree
 		-c, --median              Quantification median-cut
@@ -55,13 +56,15 @@ Il s'agit d'un programme en ligne de commande prenant une liste de paramètres.
 Une fois le résultat affiché, il est possible de basculer entre le mode PC/Color Clash à l'aide de la barre d'espacement.
 Les touches -/+ permettent de commuter la taille des pixels (doubles ou simples).
 
-Pour l'instant, seuls les mode Bitmap 40, 16/8 couleurs 320x200 avec contraintes de proximité (2 couleurs par bloc de 8 pixels) commun à tous les Thomson et le mode 160x200 16 couleurs sans contraintes des Thomson MO6/TO8/TO9 sont gérés.
+Pour l'instant, seuls les modes Bitmap 40, 16/8 couleurs 320x200 avec contraintes de proximité (2 couleurs par bloc de 8 pixels) commun à tous les Thomson et le mode 160x200 16 couleurs sans contraintes des Thomson MO6/TO8/TO9 sont gérés.
 
-Lorsqu'une configuration de type MO6, TO8, TO9 est choisie, le programme utilise un algorithme de quantification de palette (par défaut [Wu](https://www.ece.mcmaster.ca/~xwu/cq.c)) pour réduire le nombre de couleurs à 16 parmis les 4096 disponibles sur ces machines. Le résultat affiché sur le PC est en général assez fidèle aux tons de l'image de départ. L'image affichée sur le Thomson va probablement différer de l'image source. Il est en effet difficile de faire une correspondance exacte entre une palette PC et une palette Thomson.
+Lorsqu'une configuration de type MO6, TO8, TO9 est choisie, le programme utilise un algorithme de quantification de palette (par défaut [K-Mean](https://en.wikipedia.org/wiki/K-means_clustering)) pour réduire le nombre de couleurs à 16 parmis les 4096 disponibles sur ces machines. Le résultat affiché sur le PC est en général assez fidèle aux tons de l'image de départ. L'image affichée sur le Thomson va probablement différer de l'image source. Il est en effet difficile de faire une correspondance exacte entre une palette PC et une palette Thomson.
 
 Il est possible de jouer sur le gamma, le contraste, la luminosité et la saturation de l'image source pour rectifier le décalage de palette.
 
 Il est possible de reprendre le fichier TO-SNAP dans Grafx pour modifier la palette.
+
+Il est possible d'utiliser une palette prédéfinie au format [hex](https://lospec.com/palette-list).
 
 Je suis à l'écoute de toute proposition permettant de mieux faire correspondre les couleurs PC <> Thomson.
 
@@ -78,6 +81,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 |-b              |Modification de la luminosité<br>valeurs : entre -128 et 128, 0 luminosité d'origine       |
 |-t              |Modification du contraste<br>valeurs : entre 0.1 et 2.0, 1.0 contraste d'origine           |
 |-s              |Modification de la saturation<br>valeurs : entre 0.1 et 2.0, 1.0 saturation d'origine           |
+|-e              |Utilisation de la quantification [K-moyens](https://en.wikipedia.org/wiki/K-means_clustering)         |
 |-w              |Utilisation de la quantification [Xiaolin Wu](https://www.ece.mcmaster.ca/~xwu/cq.c)         |
 |-o              |Utilisation de la quantification [Octree](https://fr.wikipedia.org/wiki/Octree)         |
 |-c              |Utilisation de la quantification [Median Cut](https://en.wikipedia.org/wiki/Median_cut)         |
@@ -85,6 +89,7 @@ Je suis à l'écoute de toute proposition permettant de mieux faire correspondre
 
 # Prochaines versions
 - ~~Essayer d'ajouter la diffusion d'erreur OSTROMOUKHOV~~
+- ~~Ajouter la quantification K-mean~~
 - Gérer les autres modes graphiques Thomson TO8/TO9(+)/MO6, ~~320x200 4 couleurs~~ et ~~160x200 16 couleurs~~ sans contraintes.
 - ~~Utilisation d'une palette prédéfinie (parce que les algos de quantifications ne sont pas toujours optimaux) au format [lospec.com](https://lospec.com/palette-list) hex~~.
 - ~~Makefile Linux/BSD~~

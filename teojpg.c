@@ -7,6 +7,7 @@
 #include "mediancut.h"
 #include "octree.h"
 #include "wu.h"
+#include "kmean.h"
 #include "jpeg.h"
 
 #include <SDL2/SDL.h>
@@ -280,7 +281,6 @@ void draw_pixels_BM16_x_1(unsigned char *pixels, int width, int height, PALETTE 
 		for (int x = 0; x < w; x++)
 			sdl_pixels[x + y * w] = 0;
 
-	printf("width:%d\n", width);
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
 			sdl_pixels[(x * 2) + (y * w)] = pixels[x + y * width];
@@ -450,6 +450,7 @@ int main(int argc, char *argv[])
 	int arg_median_cut = 0;
 	int arg_wu = 0;
 	int arg_ostro = 0;
+	int arg_kmean = 0;
 	const char *arg_mode = NULL;
 	char the_mode[10];
 
@@ -465,6 +466,7 @@ int main(int argc, char *argv[])
 		OPT_FLOAT('b',		   "brightness",    &arg_brightness, "Luminosité [-128->+128]",					 NULL, 0, 0),
 		OPT_FLOAT('t',		   "contrast",	    &arg_contrast,   "Contraste [0.1->2.0]",					 NULL, 0, 0),
 		OPT_FLOAT('s',		   "saturation",    &arg_saturation, "Saturation [0.1->2.0]",					 NULL, 0, 0),
+		OPT_BOOLEAN('e',	   "kmean",	    &arg_kmean,	     "Quantification K-mean",					 NULL, 0, 0),
 		OPT_BOOLEAN('w',	   "wu",	    &arg_wu,	     "Quantification Wu",					 NULL, 0, 0),
 		OPT_BOOLEAN('o',	   "octree",	    &arg_octree,     "Quantification Octree",					 NULL, 0, 0),
 		OPT_BOOLEAN('c',	   "median",	    &arg_median_cut, "Quantification median-cut",				 NULL, 0, 0),
@@ -652,7 +654,7 @@ int main(int argc, char *argv[])
 				return 0;
 			}
 
-			printf("Utilisation de la palette palette prédéfinie %s\n", arg_palette);
+			printf("Utilisation de la palette prédéfinie %s\n", arg_palette);
 			printf("Nombre de couleurs:%d\n", the_palette.size);
 
 			if (strcmp(the_mode, "BM4") == 0 && the_palette.size > 4) {
@@ -680,15 +682,22 @@ int main(int argc, char *argv[])
 			} else if (arg_octree) {
 				printf("Reduction de palette octree\n");
 				guess_palette_octree(the_image, &the_palette, /*16*/ color_max);
-			} else {
+			} else if (arg_wu) {
 				printf("Reduction de palette wu\n");
 				guess_palette_wu(the_image, &the_palette, /*16*/ color_max);
+			} else /*if (arg_kmean)*/ {
+				printf("Reduction de palette k-mean\n");
+				guess_palette_kmean(the_image, &the_palette, color_max);
 			}
 
 			// post traitemnt sur les couleurs trouvées
 			// augmentation de la luminosité et noir à
 			// la place de la couleur la plus sombre
-			thomson_post_trt_palette(&the_palette, &the_palette);
+			if (color_max == 16) {
+				thomson_post_trt_palette_16(&the_palette, &the_palette);
+			} else {
+				thomson_post_trt_palette_4(&the_palette, &the_palette);
+			}
 		}
 	} else {
 		// Palette fixe de l'ordinateur
