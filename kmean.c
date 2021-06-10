@@ -1,19 +1,35 @@
 #include "kmean.h"
 #include <float.h>
 #include <math.h>
+#include <stdlib.h>
+#include <sys/time.h>
 
 #define max(a, b)    (((a) > (b)) ? (a) : (b))
 
-int rand_int(int n) {
-  if ((n - 1) == RAND_MAX) {
-    return rand();
-  } else {
-    int end = RAND_MAX / n; // truncate skew
-    end *= n;
-    int r;
-    while ((r = rand()) >= end);
-    return r % n;
-  }
+static int initialized = 0;
+
+// int rand_int(int n) {
+//   if ((n - 1) == RAND_MAX) {
+//     return rand();
+//   } else {
+//     int end = RAND_MAX / n; // truncate skew
+//     end *= n;
+//     int r;
+//     while ((r = rand()) >= end);
+//     return r % n;
+//   }
+// }
+
+int rand_int(int n)
+{
+    struct timeval current_time;
+    if (!initialized) {
+        gettimeofday(&current_time, NULL);
+        srand(current_time.tv_usec);
+        initialized = 1;
+    }
+    int random_value = rand() % (n+1);
+    return random_value;
 }
 
 
@@ -110,6 +126,9 @@ void get_cluster_centroid(IMAGE *image, vector *cluster_vector, vector *centroid
     CLUSTER_LIST current_cluster;
 
     int cl_size = vector_size(*cluster_vector);
+
+    
+
     vector_clear(*centroid_vector);
     for (int i = 0; i < cl_size; i++) {
         COLOR no_color = {-1, -1, -1};
@@ -117,7 +136,7 @@ void get_cluster_centroid(IMAGE *image, vector *cluster_vector, vector *centroid
     }
     
 
-    for (int i = 0; i < cl_size; i++) {
+    for (int i = 0; i < cl_size; i++) {        
         vector_get_at(&current_cluster, *cluster_vector, i);
         if (vector_size(current_cluster.cluster_vector) > 0) {
             COLOR c_mean;
@@ -164,6 +183,8 @@ void guess_palette_kmean(IMAGE *image, PALETTE *palette, int reduc_size)
         vector_clear(clusters_vector);
         new_cluster_list(reduc_size, &clusters_vector);
 
+        
+
         for (int i = 0; i < image->height * image->width; i++) {
             PIXEL p = image->pixels[i];
             COLOR c;
@@ -175,7 +196,6 @@ void guess_palette_kmean(IMAGE *image, PALETTE *palette, int reduc_size)
             vector_get_at(&current_cluster, clusters_vector, assignement[i]);
             vector_add_last(current_cluster.cluster_vector, &c);
         }
-
 
         // Test de la convergence
         delta_max = 0;
