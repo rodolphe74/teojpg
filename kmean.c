@@ -160,15 +160,9 @@ void guess_palette_kmean(IMAGE *image, PALETTE *palette, int reduc_size)
 {
     vector clusters_vector = vector_init(sizeof(CLUSTER_LIST));
     vector centroid_vector = vector_init(sizeof(COLOR));
-    // list assignement = list_init(sizeof(COLOR));
     int image_size =  image->height * image->width;
-    int assignement[image_size];
 
     new_cluster_list(reduc_size, &clusters_vector);
-
-    for (int i = 0; i < image_size; i++) {
-        assignement[i] = -1;
-    }
 
     int iter = 0, max_iter = 100;
     float *previous_variance = (float *) malloc(sizeof(float) * reduc_size);
@@ -192,8 +186,7 @@ void guess_palette_kmean(IMAGE *image, PALETTE *palette, int reduc_size)
             c.g = p.g;
             c.b = p.b;
             int nc_idx = nearest_color(c, &centroid_vector);
-            assignement[i] = nc_idx;
-            vector_get_at(&current_cluster, clusters_vector, assignement[i]);
+            vector_get_at(&current_cluster, clusters_vector, nc_idx);
             vector_add_last(current_cluster.cluster_vector, &c);
         }
 
