@@ -433,7 +433,7 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_SEG 
 	FILE *basic_out = fopen(basic_filename, "w");
 	char str_value[16];
 	char data_values[512];
-	char data_line[512];
+	char data_line[1024];
 
 	// decoupage bloc 8 pixels
 	// couleur optimale sur bloc 8
@@ -570,8 +570,10 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_SEG 
 							// itoa(k, binary_string, 2);
 							memset(binary_string, 0, 9);
 							dec_to_binary(k, binary_string);
-							sprintf(byte, "%*.*s%s", 8 - strlen(binary_string), 8 - strlen(binary_string), "00000000", binary_string);
-							// printf("%d  -> %s\n", k, byte);
+
+							char sz[] = "00000000";
+							strcpy(sz + strlen(sz) - strlen(binary_string), binary_string);
+							strcpy(byte, sz);
 
 							for (int l = 0; l < 8; l++)
 								cmp_bloc[l] = (byte[l] == '0' ? index_color_1 : index_color_2);
@@ -621,7 +623,7 @@ unsigned char *thomson_post_trt_combin(IMAGE *source, PALETTE *palette, MAP_SEG 
 
 		data_values[strlen(data_values) - 1] = 0; // sup virgule
 		sprintf(data_line, "%d DATA %s\n", start_line, data_values);
-		fprintf(basic_out, data_line);
+		fprintf(basic_out, "%s", data_line);
 	}
 	printf("\nLe fichier basic est créé\n");
 	fflush(stdout);
@@ -978,7 +980,7 @@ void save_bm4_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, char
 		}
 		data_values[strlen(data_values) - 1] = 0;
 		strcat(data_values, "\n");
-		fprintf(basic_out, data_values);
+		fprintf(basic_out, "%s", data_values);
 		line_count++;
 	}
 	fflush(basic_out);
@@ -1185,7 +1187,7 @@ void save_bm16_basic(IMAGE *source, unsigned char *pixels, PALETTE *palette, cha
 		}
 		data_values[strlen(data_values) - 1] = 0;
 		strcat(data_values, "\n");
-		fprintf(basic_out, data_values);
+		fprintf(basic_out, "%s", data_values);
 		line_count++;
 	}
 	fflush(basic_out);

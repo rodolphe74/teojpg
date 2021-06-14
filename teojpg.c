@@ -538,7 +538,7 @@ int main(int argc, char *argv[])
 		matrix_size = 0;
 		dither_mode = FLOYD;
 	} else if (arg_floyd > 0 && arg_floyd > 10) {
-		printf("Dithering Floyd Steinberg - utilisation de la matrice standard\n", arg_floyd);
+		printf("Dithering Floyd Steinberg - utilisation de la matrice standard\n");
 		matrix_size = 0;
 	} else if (arg_ostro) {
 		dither_mode = OSTRO;

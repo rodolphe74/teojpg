@@ -55,7 +55,7 @@ int is_leaf(OCTREE *octree)
 void display_octree(OCTREE *octree)
 {
 	if (is_leaf(octree)) {
-		printf("%p *%d (%d,%d,%d) (%d,%d,%d)\n", (void *)octree, octree->count,
+		printf("%p *%d (%lu,%lu,%lu) (%lu,%lu,%lu)\n", (void *)octree, octree->count,
 		       octree->c[0], octree->c[1], octree->c[2],
 		       octree->c[0] / octree->count, octree->c[1] / octree->count, octree->c[2] / octree->count);
 	} else {
